@@ -1,0 +1,5 @@
+stdout            | info    | ... loading "RADIATION" from "/home/yunjaeh/OpenFOAM/yunjaeh-4.0/run/UQ/uq_2019/weather_input/night_0206.mat"
+stdout            | info    | ... loading "TEMPERATURE" from "/home/yunjaeh/OpenFOAM/yunjaeh-4.0/run/UQ/uq_2019/weather_input/night_0206.mat"
+stdout            | info    | ... loading "WIND" from "/home/yunjaeh/OpenFOAM/yunjaeh-4.0/run/UQ/uq_2019/weather_input/night_0206.mat"
+stdout            | info    | The initialization finished successfully without homotopy method.
+stdout            | info    | The simulation finished successfully.

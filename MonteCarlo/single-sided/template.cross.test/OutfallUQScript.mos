@@ -1,0 +1,5 @@
+loadModel(Modelica);
+loadFile("Outfall.mo");
+loadFile("Two_single_ventilation.mo");
+cd("/home/yunjaeh/OpenFOAM/yunjaeh-4.0/run/UQ/uq_2019/template.cross.test/workspace");
+simulate(Outfall,outputFormat="csv",fileNamePrefix="OM_Result");
