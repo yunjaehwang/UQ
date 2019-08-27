@@ -62,12 +62,12 @@ model Outfall
   Modelica.Blocks.Sources.Constant Infiltration(k = 4.75 * 17.74 / 3600 * 1005 * 1.225 * INFILTRATION) annotation(
     Placement(visible = true, transformation(origin = {118, -54}, extent = {{-10, -10}, {10, 10}}, rotation = 90)));
   Modelica.Blocks.Math.Product product1 annotation(
-    Placement(visible = true, transformation(origin = {96, -16}, extent = {{-10, -10}, {10, 10}}, rotation = 90)));
+    Placement(visible = true, transformation(origin = {98, -16}, extent = {{-10, -10}, {10, 10}}, rotation = 90)));
   Modelica.Thermal.HeatTransfer.Sources.PrescribedHeatFlow Heatflow_infiltration annotation(
     Placement(visible = true, transformation(origin = {96, 16}, extent = {{10, 10}, {-10, -10}}, rotation = -90)));
-  Modelica.Blocks.Sources.CombiTimeTable Data_solar_radiation(fileName = "/home/yunjaeh/OpenFOAM/yunjaeh-4.0/run/UQ/uq_2019/weather_input/DATA_DATE.mat", tableName = "RADIATION", tableOnFile = true, timeScale = 60) annotation(
+  Modelica.Blocks.Sources.CombiTimeTable Data_solar_radiation(fileName = "/home/yunjaeh/github/UQ/MonteCarlo/weatherInputs/DATA_DATE.mat", tableName = "RADIATION", tableOnFile = true, timeScale = 60) annotation(
     Placement(visible = true, transformation(origin = {-352, 146}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
-  Modelica.Blocks.Sources.CombiTimeTable Data_outdoor_temperature(fileName = "/home/yunjaeh/OpenFOAM/yunjaeh-4.0/run/UQ/uq_2019/weather_input/DATA_DATE.mat", tableName = "TEMPERATURE", tableOnFile = true, timeScale = 60) annotation(
+  Modelica.Blocks.Sources.CombiTimeTable Data_outdoor_temperature(fileName = "/home/yunjaeh/github/UQ/MonteCarlo/weatherInputs/DATA_DATE.mat", tableName = "TEMPERATURE", tableOnFile = true, timeScale = 60) annotation(
     Placement(visible = true, transformation(origin = {-374, -46}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
   Modelica.Blocks.Sources.Constant Convection_coef_roof_inner(k = 7.335 * CONVECTION_COEF_INNER) annotation(
     Placement(visible = true, transformation(origin = {-32, 142}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
@@ -101,7 +101,7 @@ model Outfall
     Placement(visible = true, transformation(origin = {-312, 92}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
   Modelica.Blocks.Math.MultiProduct multiProduct1(nu = 3) annotation(
     Placement(visible = true, transformation(origin = {-278, 90}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
-  Modelica.Blocks.Sources.CombiTimeTable Data_wind_speed(fileName = "/home/yunjaeh/OpenFOAM/yunjaeh-4.0/run/UQ/uq_2019/weather_input/DATA_DATE.mat", tableName = "WIND", tableOnFile = true, timeScale = 60) annotation(
+  Modelica.Blocks.Sources.CombiTimeTable Data_wind_speed(fileName = "/home/yunjaeh/github/UQ/MonteCarlo/weatherInputs/DATA_DATE.mat", tableName = "WIND", tableOnFile = true, timeScale = 60) annotation(
     Placement(visible = true, transformation(origin = {-378, -122}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
   Modelica.Blocks.Math.Add Temperature_difference(k1 = +1, k2 = -1) annotation(
     Placement(visible = true, transformation(origin = {90, -76}, extent = {{-10, -10}, {10, 10}}, rotation = 90)));
@@ -160,6 +160,12 @@ model Outfall
   Modelica.Thermal.HeatTransfer.Sources.PrescribedTemperature SkyTemperatureToK annotation(
     Placement(visible = true, transformation(origin = {-242, 90}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
 equation
+  connect(Infiltration.y, product1.u2) annotation(
+    Line(points = {{118, -43}, {104, -43}, {104, -28}}, color = {0, 0, 127}));
+  connect(product1.y, Heatflow_infiltration.Q_flow) annotation(
+    Line(points = {{98, -5}, {98, 1.5}, {96, 1.5}, {96, 6}}, color = {0, 0, 127}));
+  connect(Temperature_difference.y, product1.u1) annotation(
+    Line(points = {{90, -65}, {90, -45.5}, {92, -45.5}, {92, -28}}, color = {0, 0, 127}));
   connect(Data_wind_speed.y[2], StdWindSpeed.u2) annotation(
     Line(points = {{-367, -122}, {-366, -122}, {-366, -108}, {-352, -108}}, color = {0, 0, 127}, thickness = 0.5));
   connect(Data_wind_speed.y[1], WindSpeed.u2) annotation(
@@ -292,8 +298,6 @@ equation
     Line(points = {{-174, 78}, {-170, 78}, {-170, 84}, {-168, 84}}, color = {0, 0, 127}));
   connect(Area_roof.y, product5.u1) annotation(
     Line(points = {{-172, 134}, {-170, 134}, {-170, 140}, {-168, 140}}, color = {0, 0, 127}));
-  connect(Temperature_difference.y, product1.u1) annotation(
-    Line(points = {{90, -65}, {90, -28}}, color = {0, 0, 127}));
   connect(Temperature_Indoor.T, Temperature_difference.u2) annotation(
     Line(points = {{146, 82}, {153, 82}, {153, 82}, {158, 82}, {158, -106}, {96, -106}, {96, -97}, {96, -97}, {96, -88}}, color = {0, 0, 127}));
   connect(Floor_temperature.y, Temperature_floor.T) annotation(
@@ -318,10 +322,6 @@ equation
     Line(points = {{-15, -30}, {-13, -30}, {-13, -30}, {-11, -30}, {-11, -30}, {-5, -30}, {-5, -36}, {-6, -36}, {-6, -36}, {-7, -36}}, color = {0, 0, 127}));
   connect(Convection_coef_roof_inner.y, Convection_roof_inner.Gc) annotation(
     Line(points = {{-21, 142}, {-5, 142}, {-5, 130}, {-6, 130}}, color = {0, 0, 127}));
-  connect(product1.y, Heatflow_infiltration.Q_flow) annotation(
-    Line(points = {{96, -5}, {96, 6}}, color = {0, 0, 127}));
-  connect(Infiltration.y, product1.u2) annotation(
-    Line(points = {{118, -43}, {111, -43}, {111, -43}, {102, -43}, {102, -29}, {112, -29}, {112, -29}, {102, -29}}, color = {0, 0, 127}));
   connect(Temperature_floor.port, Convection_floor.solid) annotation(
     Line(points = {{-96, -114}, {-68.5, -114}, {-68.5, -114}, {-43, -114}, {-43, -92}, {-17.5, -92}, {-17.5, -92}, {-12, -92}}, color = {191, 0, 0}));
   connect(Heatflow_solar_radiation.port, Conduction_roof_outer.port_a) annotation(

@@ -4,3 +4,11 @@ Temperature and ventilation rate prediction with two ventilation models
     2. Cross ventilation model
 
 Single simulation codes written in OpenModelica language.
+
+
+
+# H2
+ACH measurements
+|Configuration |Daytime| Nighttime |
+|==============|=======|===========|
+
