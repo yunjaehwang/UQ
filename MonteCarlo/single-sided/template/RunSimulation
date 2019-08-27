@@ -1,43 +1,35 @@
 #!/bin/bash
 
-# written Apr. 30. 2019
+# First written: Apr. 30. 2019
+# Last modified: Aug. 27. 2019
 # by Yunjae Hwang, yunjaeh@stanford.edu
 
 # This script is to connect MATLAB to OpenModelica
 # Pre-processing is required : change target parameter(number) to the name(string)
 #				and the model name (optional)
 
-# ---------- list of files ---------- #
-FILE_SCRIPT='OutfallUQScript.mos'			    # OpenModelica script that runs model
+
+# -------------------- file list -------------------- #
+### Script, output file names
+FILE_SCRIPT='OutfallUQScript.mos'			    # OpenModelica script that compiles and runs model
 FILE_OUTPUT='./workspace/OM_Result_res.csv'     # output result file
 FILE_FILTERED='./workspace/OUTPUT_FILTERED.dat' # Filtered output file that contains only variables we need (do not filter to compare temperature data as well
 
-# FILE_OUTPUT='./OM_Result_res.csv'     # output result file
-# FILE_FILTERED='./OUTPUT_FILTERED.dat' # Filtered output file that contains only variables we need (do not filter to compare temperature data as well
-# Template files
-#   : strings in template files will be replaced with values(numbers) sampled in the 
-FILE_TEMPLATE='Outfall.mo.template'		        
+### Templates: strings in template files will be replaced with values(numbers)
+MAIN_TEMPLATE='Outfall.mo.template'		        
 VENTILATION_TEMPLATE='Two_single_ventilation.mo.template'
 
-# Model files
-#   : Actual files that are going to run
-FILE_MODEL='Outfall.mo'		
+### Models: Actual files that are going to run
+MAIN_MODEL='Outfall.mo'		
 VENTILATION_MODEL='Two_single_ventilation.mo'
-
 PREFIX_RESULT='OM_Result'
 
-# list of directory
+
+# -------------------- directory -------------------- #
 DIR_MODELICA=$(pwd)
 
-# print summary
-# echo $'\n\tSummary\n'
-# echo "File	: $FILE_TEMPLATE -> $FILE_MODEL"
-# echo "Script 	: $FILE_SCRIPT"
-# echo "Directory : $DIR_MODELICA"
-# echo "Data 	: $DIR_MODELICA/workspace/$PREFIX_RESULT"
 
-
-
+# -------------------- parameters -------------------- #
 ## read parameters from a input file
 # nominal parameters
 VAL_DATA_DATE=$(awk 'NR==1{print $0}' UQ_input.in) 
@@ -46,6 +38,8 @@ VAL_HEIGHT_2=$(awk 'NR==3{print $0}' UQ_input.in)
 VAL_AREA_OPENING_1=$(awk 'NR==4{print $0}' UQ_input.in) 
 VAL_AREA_OPENING_2=$(awk 'NR==5{print $0}' UQ_input.in) 
 
+
+# -------------------- directory -------------------- #
 # uncertain parameters
 VAL_CONVECTION_COEF_INNER=$(awk 'NR==6{print $0}' UQ_input.in) 
 VAL_CONVECTION_COEF_OUTER=$(awk 'NR==7{print $0}' UQ_input.in)
@@ -59,33 +53,41 @@ VAL_COEFFICIENT_2=$(awk 'NR==14{print $0}' UQ_input.in)
 VAL_COEFFICIENT_3=$(awk 'NR==15{print $0}' UQ_input.in) 
 VAL_INFILTRATION=$(awk 'NR==16{print $0}' UQ_input.in) 
 
+# add input factors (outdoor temperature, radiation, wind)
+VAL_STD_TEMPERATURE=$(awk 'NR==17{print $0}' UQ_input.in) 
+VAL_STD_RADIATION=$(awk 'NR==18{print $0}' UQ_input.in) 
+VAL_STD_WIND=$(awk 'NR==19{print $0}' UQ_input.in) 
+
  
-# echo '-----------------------------------------'
-# echo $'\n	Start to change parameters\n'
-# echo '-----------------------------------------'
-echo 'Height and area of openings'
+# -------------------- substitution -------------------- #
+### 1. Area and height of openings
 sed "s/HEIGHT_1/$VAL_HEIGHT_1/g" $VENTILATION_TEMPLATE > $VENTILATION_MODEL
 sed -i "s/HEIGHT_2/$VAL_HEIGHT_2/g" $VENTILATION_MODEL
 sed -i "s/AREA_OPENING_1/$VAL_AREA_OPENING_1/g" $VENTILATION_MODEL
 sed -i "s/AREA_OPENING_2/$VAL_AREA_OPENING_2/g" $VENTILATION_MODEL
+
+### 2. Coefficients in ventilation models
 sed -i "s/COEFFICIENT_1/$VAL_COEFFICIENT_1/g" $VENTILATION_MODEL
 sed -i "s/COEFFICIENT_2/$VAL_COEFFICIENT_2/g" $VENTILATION_MODEL
 sed -i "s/COEFFICIENT_3/$VAL_COEFFICIENT_3/g" $VENTILATION_MODEL
 
-echo 'Data date'
-sed "s/DATA_DATE/$VAL_DATA_DATE/g" $FILE_TEMPLATE > $FILE_MODEL
+### 3. Date 
+sed "s/DATA_DATE/$VAL_DATA_DATE/g" $MAIN_TEMPLATE > $MAIN_MODEL
 
-echo "Convection - chage heat transfer coefficient"
-sed -i "s/CONVECTION_COEF_INNER/$VAL_CONVECTION_COEF_INNER/g"  $FILE_MODEL
-sed -i "s/CONVECTION_COEF_OUTER/$VAL_CONVECTION_COEF_OUTER/g" $FILE_MODEL
+### 4. Heat transfer coefficients
+sed -i "s/CONVECTION_COEF_INNER/$VAL_CONVECTION_COEF_INNER/g"  $MAIN_MODEL
+sed -i "s/CONVECTION_COEF_OUTER/$VAL_CONVECTION_COEF_OUTER/g" $MAIN_MODEL
+sed -i "s/CONDUCTIVITY_WALL/$VAL_CONDUCTIVITY_WALL/g" $MAIN_MODEL
+sed -i "s/CONDUCTIVITY_ROOF/$VAL_CONDUCTIVITY_ROOF/g" $MAIN_MODEL
+sed -i "s/EMISSIVITY_WALL/$VAL_EMISSIVITY_WALL/g" $MAIN_MODEL
+sed -i "s/EMISSIVITY_ROOF/$VAL_EMISSIVITY_ROOF/g" $MAIN_MODEL
+sed -i "s/REFLECTANCE_ROOF/$VAL_REFLECTANCE_ROOF/g" $MAIN_MODEL
+sed -i "s/INFILTRATION/$VAL_INFILTRATION/g" $MAIN_MODEL
 
-echo 'Infiltration - pre factor'
-sed -i "s/CONDUCTIVITY_WALL/$VAL_CONDUCTIVITY_WALL/g" $FILE_MODEL
-sed -i "s/CONDUCTIVITY_ROOF/$VAL_CONDUCTIVITY_ROOF/g" $FILE_MODEL
-sed -i "s/EMISSIVITY_WALL/$VAL_EMISSIVITY_WALL/g" $FILE_MODEL
-sed -i "s/EMISSIVITY_ROOF/$VAL_EMISSIVITY_ROOF/g" $FILE_MODEL
-sed -i "s/REFLECTANCE_ROOF/$VAL_REFLECTANCE_ROOF/g" $FILE_MODEL
-sed -i "s/INFILTRATION/$VAL_INFILTRATION/g" $FILE_MODEL
+### 5. Pre-factors for input parameters
+sed -i "s/STD_TEMPERATURE/$VAL_STD_TEMPERATURE/g" $MAIN_MODEL
+sed -i "s/STD_RADIATION/$VAL_STD_RADIATION/g" $MAIN_MODEL
+sed -i "s/STD_WIND/$VAL_STD_WIND/g" $MAIN_MODEL
 
 # echo 'Area and discharge coefficient of two openings'
 # sed "s/AREA_OPENING_1/$VAL_AREA_OPENING_1/g" $AREA_TEMPLATE > $AREA_MODEL
@@ -94,20 +96,15 @@ sed -i "s/INFILTRATION/$VAL_INFILTRATION/g" $FILE_MODEL
 # sed -i "s/CD_OPENING_2/$VAL_CD_OPENING_2/g" $AREA_MODEL
 
 
-
-# echo '-----------------------------------------'
-# echo $'\n\tChange Done\n'
-# echo '-----------------------------------------'
-# cat $FILE_MODEL
+# -------------------- write and run MOS script -------------------- #
 
 # clear workspace
 mkdir ./workspace
-# rm ./workspace/*
-# Writing ".mos" script (to assign simulation paramters)
+
 echo $'\n\tWrite .mos script\n'
 echo "cd(\"$DIR_MODELICA\");" >> $FILE_SCRIPT
 echo "loadModel(Modelica);" > $FILE_SCRIPT
-echo "loadFile(\"$FILE_MODEL\");" >> $FILE_SCRIPT
+echo "loadFile(\"$MAIN_MODEL\");" >> $FILE_SCRIPT
 echo "loadFile(\"$VENTILATION_MODEL\");" >> $FILE_SCRIPT
 echo "cd(\"$DIR_MODELICA/workspace\");" >> $FILE_SCRIPT
 echo "simulate(Outfall,outputFormat=\"csv\",fileNamePrefix=\"$PREFIX_RESULT\");" >> $FILE_SCRIPT
@@ -120,6 +117,7 @@ echo $'\n\tSimulation Start\n'
 omc $FILE_SCRIPT
 
 
+# -------------------- filter output files -------------------- #
 # filtering variables
 # f_indoor=$(head -n 1 $FILE_OUTPUT | tr ',' '\n' | grep -n 'Temperature_Indoor.T' | awk -F: '{print$1}' )
 # f_wall=$(head -n 1 $FILE_OUTPUT | tr ',' '\n' | grep -n 'Conduction_wall1_outer.port_b.T' | awk -F: '{print$1}' )
