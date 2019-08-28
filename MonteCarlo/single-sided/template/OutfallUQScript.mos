@@ -1,0 +1,5 @@
+loadModel(Modelica);
+loadFile("Outfall.mo");
+loadFile("Two_single_ventilation.mo");
+cd("/home/yunjaeh/github/UQ/MonteCarlo/single-sided/template/workspace");
+simulate(Outfall,outputFormat="csv",fileNamePrefix="OM_Result");

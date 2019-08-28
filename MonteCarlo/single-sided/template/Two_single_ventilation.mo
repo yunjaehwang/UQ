@@ -1,11 +1,11 @@
 model Two_single_ventilation
   Modelica.Blocks.Math.Add add1(k1 = +1, k2 = -1) annotation(
     Placement(visible = true, transformation(origin = {-98, -90}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
-  Modelica.Blocks.Sources.Constant C1(k = 0.001 * COEFFICIENT_1) annotation(
+  Modelica.Blocks.Sources.Constant C1(k = 0.001 * 1.02) annotation(
     Placement(visible = true, transformation(origin = {-90, 106}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
-  Modelica.Blocks.Sources.Constant C2(k = 0.0035 * COEFFICIENT_2) annotation(
+  Modelica.Blocks.Sources.Constant C2(k = 0.0035 * 1.1) annotation(
     Placement(visible = true, transformation(origin = {-90, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
-  Modelica.Blocks.Sources.Constant C3(k = 0.01 * COEFFICIENT_3) annotation(
+  Modelica.Blocks.Sources.Constant C3(k = 0.01 * 1.3) annotation(
     Placement(visible = true, transformation(origin = {-42, 4}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
   Modelica.Blocks.Math.Sqrt sqrt1 annotation(
     Placement(visible = true, transformation(origin = {50, 50}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
@@ -23,13 +23,13 @@ model Two_single_ventilation
     Placement(visible = true, transformation(origin = {-42, 30}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
   Modelica.Blocks.Math.MultiProduct multiProduct2(nu = 3) annotation(
     Placement(visible = true, transformation(origin = {-40, -30}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
-  Modelica.Blocks.Sources.Constant Area_1(k = AREA_OPENING_1)  annotation(
+  Modelica.Blocks.Sources.Constant Area_1(k = 0.62)  annotation(
     Placement(visible = true, transformation(origin = {50, 82}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
-  Modelica.Blocks.Sources.Constant Area_2(k = AREA_OPENING_2)  annotation(
+  Modelica.Blocks.Sources.Constant Area_2(k = 0.05)  annotation(
     Placement(visible = true, transformation(origin = {50, -60}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
-  Modelica.Blocks.Sources.Constant Height_1(k = HEIGHT_1)  annotation(
+  Modelica.Blocks.Sources.Constant Height_1(k = 0.91)  annotation(
     Placement(visible = true, transformation(origin = {-90, 30}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
-  Modelica.Blocks.Sources.Constant Height_2(k = HEIGHT_2)  annotation(
+  Modelica.Blocks.Sources.Constant Height_2(k = 0.43)  annotation(
     Placement(visible = true, transformation(origin = {-90, -30}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
   Modelica.Blocks.Math.MultiSum multiSum1(nu = 3)  annotation(
     Placement(visible = true, transformation(origin = {10, 50}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));

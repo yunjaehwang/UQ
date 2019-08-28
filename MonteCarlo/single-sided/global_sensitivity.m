@@ -15,7 +15,7 @@ mkdir ./input
 mkdir ./output
 
 num_core    = 12;       % # of cores used for parallel process
-num_param   = 11;        % # of uncertain parameters
+num_param   = 14;        % # of uncertain parameters
 num_iter    = 50;       % # of total number of iteration
 num_sample  = 100;      % # of samples in each iteration
 
@@ -27,18 +27,18 @@ num_sample  = 100;      % # of samples in each iteration
 
 % nominal parameteres       : np(1, ..., n)
 %   values not changing in the simulation
-num_case = '19';
-date = 'night_0210';
-config ='night_SFV';
+num_case = '1';
+date = 'Night_0205';
+config ='night_SV';
 
 
 % height_1 = '0.91';      area_1 = '0.62';        % window
 height_1 = '0.25';      area_1 = '0.6598';      % skylight
 % height_1 = '0.43';    area_1 = '0.05';          % rear vent
 
-% height_2 = '0.43';    area_2 = '0.05';          % rear vent
+height_2 = '0.43';    area_2 = '0.05';          % rear vent
 % height_2 = '0.91';    area_2 = '0.62';          % window
-height_2 = '0.09';    area_2 = '0.005';         % floor vent
+% height_2 = '0.09';    area_2 = '0.005';         % floor vent
 
 % height_2 = '0.0';       area_2 ='0.0';          % single sided
 
@@ -72,6 +72,9 @@ up( 8,1) = 0.8;         up( 8,2) = 1.2;    % Coefficient 1
 up( 9,1) = 0.8;         up( 9,2) = 1.2;    % Coefficient 2
 up( 10,1) = 0.8;        up( 10,2) = 1.2;    % Coefficient 3
 up( 11,1) = 0.8;        up( 11,2) = 1.2;    % Infiltration
+up( 12,1) = -1.0;        up( 12,2) = 1.0;    % Temperature std
+up( 13,1) = -1.0;        up( 13,2) = 1.0;    % Radiation std
+up( 14,1) = -1.0;        up( 14,2) = 1.0;    % Wind std 
 
 
 
@@ -102,6 +105,10 @@ for iter = 1:num_iter
         system(['echo ''',num2str(A(i,9)),''' >> ./input/UQ_input_',num2str(i),'.in']);
         system(['echo ''',num2str(A(i,10)),''' >> ./input/UQ_input_',num2str(i),'.in']);
         system(['echo ''',num2str(A(i,11)),''' >> ./input/UQ_input_',num2str(i),'.in']);
+        system(['echo ''',num2str(A(i,12)),''' >> ./input/UQ_input_',num2str(i),'.in']);
+        system(['echo ''',num2str(A(i,13)),''' >> ./input/UQ_input_',num2str(i),'.in']);
+        system(['echo ''',num2str(A(i,14)),''' >> ./input/UQ_input_',num2str(i),'.in']);
+        
     end
     
     % Run OpenModelica script
