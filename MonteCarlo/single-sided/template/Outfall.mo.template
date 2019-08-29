@@ -59,7 +59,7 @@ model Outfall
     Placement(visible = true, transformation(origin = {-122, 154}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
   Modelica.Thermal.HeatTransfer.Sources.PrescribedTemperature Temperature_floor annotation(
     Placement(visible = true, transformation(origin = {-106, -114}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
-  Modelica.Blocks.Sources.Constant Infiltration(k = 4.75 * 17.74 / 3600 * 1005 * 1.225 * INFILTRATION) annotation(
+  Modelica.Blocks.Sources.Constant Infiltration(k = 17.74 / 3600 * 1005 * 1.225 * INFILTRATION) annotation(
     Placement(visible = true, transformation(origin = {118, -54}, extent = {{-10, -10}, {10, 10}}, rotation = 90)));
   Modelica.Blocks.Math.Product product1 annotation(
     Placement(visible = true, transformation(origin = {98, -16}, extent = {{-10, -10}, {10, 10}}, rotation = 90)));

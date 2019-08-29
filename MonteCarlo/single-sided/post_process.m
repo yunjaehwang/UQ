@@ -1,7 +1,7 @@
 %% pre-process
 % read output files and filter
 clear;  clc;
-cd('/home/yunjaeh/OpenFOAM/yunjaeh-4.0/run/UQ/uq_2019/data/');
+cd('/home/yunjaeh/github/UQ/MonteCarlo/single-sided/Night_SV');
 mkdir ./output
 % num_param   = 9;        % # of uncertain parameters
 num_iter    = 50;       % # of total number of iteration
@@ -10,6 +10,9 @@ num_sample  = 100;      % # of samples in each iteration
 data_input=[];
 len_time = 3377;
 
+data.temp_out = zeros(num_sample*num_iter, len_time);
+data.rad = zeros(num_sample*num_iter, len_time);
+data.wind = zeros(num_sample*num_iter, len_time);
 data.temp_in = zeros(num_sample*num_iter, len_time);
 data.vent_rate = zeros(num_sample*num_iter, len_time);
 data.wall = zeros(num_sample*num_iter, len_time);
@@ -22,49 +25,137 @@ data.roof_out = zeros(num_sample*num_iter, len_time);
 
 
 for iter = 1:num_iter
-
     
     data_temp = csvread(['./input/input_',num2str(iter),'.csv']);
     data_input = [data_input; data_temp];
     
     for i =1:num_sample
-        
-%         f_out_raw = ['./output_',num2str(iter),'/result_',num2str(i),'.csv'];
+        fname = ['./output_',num2str(iter),'/result_',num2str(i)];
+        system(['./OutputFiltering ',fname,'.csv ', fname,'.out']);
+
         idx = num_sample * (iter-1) + i
-        f_out_raw = ['./output_',num2str(iter),'/result_',num2str(i),'.csv'];
-        
-        data_temp = dlmread(f_out_raw,' ',1,0);    %csvread([dir,'output_',num2str(iter),'/result_',num2str(i),'.csv'],1);
-        
-        data.temp_in(idx,:) = data_temp(:,1)';
-        data.wall(idx,:) = data_temp(:,2)';
-        data.wall_in(idx,:) = data_temp(:,3)';
-        data.wall_out(idx,:) = data_temp(:,4)';
-        data.roof(idx,:) = data_temp(:,5)';
-        data.roof_in(idx,:) = data_temp(:,6)';
-        data.roof_out(idx,:) = data_temp(:,7)';
-        data.vent_rate(idx,: ) = data_temp(:,8)';
-        
-%         try
-%         catch
-%             display(['error in reading input, iteration: ', num2str(iter),', sample: ',num2str(i)]);
-%             temp_in(idx,:) = NaN;
-%             vent_rate(idx,:) = NaN;
-%             wall_inner_a(idx,:) = NaN;
-%             wall_inner_b(idx,:) = NaN;
-%             wall_outer_a(idx,:) = NaN;
-%             wall_outer_b(idx,:) = NaN;
-%             continue
-%         end
-        
+%         f_out_raw = ['./output_',num2str(iter),'/result_',num2str(i),'.csv'];
+
+         
+        data_temp = dlmread([fname,'.out'],' ',1,0);    %csvread([dir,'output_',num2str(iter),'/result_',num2str(i),'.csv'],1);
+%       
+        data.temp_out(idx,:) = data_temp(:,1)';
+        data.rad(idx,:) = data_temp(:,2)';
+        data.wind(idx,:) = data_temp(:,3)';
+        data.temp_in(idx,:) = data_temp(:,4)';
+        data.wall(idx,:) = data_temp(:,5)';
+        data.wall_in(idx,:) = data_temp(:,6)';
+        data.wall_out(idx,:) = data_temp(:,7)';
+        data.roof(idx,:) = data_temp(:,8)';
+        data.roof_in(idx,:) = data_temp(:,9)';
+        data.roof_out(idx,:) = data_temp(:,10)';
+        data.vent_rate(idx,: ) = data_temp(:,11)';
+
+% %         try
+% %         catch
+% %             display(['error in reading input, iteration: ', num2str(iter),', sample: ',num2str(i)]);
+% %             temp_in(idx,:) = NaN;
+% %             vent_rate(idx,:) = NaN;
+% %             wall_inner_a(idx,:) = NaN;
+% %             wall_inner_b(idx,:) = NaN;
+% %             wall_outer_a(idx,:) = NaN;
+% %             wall_outer_b(idx,:) = NaN;
+% %             continue
+% %         end
+% %         
     end
 end
 
 data.input = data_input;
 save('data_summary.mat','data');
+% figure();
+% for i=1:14
+%     subplot(3,5,i);
+%     histogram(data_input(:,i),20);
+% end
 
 
 
-%% plot
+%% plot input and outputs
+load('/home/yunjaeh/github/UQ/MonteCarlo/single-sided/integral_time_stamp.mat');     % load time stamp
+
+
+vol_house = 17.72;
+ach_in = 4.75;
+ach = data.vent_rate*3600/vol_house;
+
+for i=1:size(data.vent_rate,1)
+    ach(i,:) = ach(i,:) + ach_in*data.input(i,11);
+end
+
+
+
+figure();
+subplot(3,2,1); hold on
+patch([t_stamp' fliplr(t_stamp')], [max(data.temp_out) fliplr(min(data.temp_out))]-273.15,[0.8 0.8 0.8],...
+    'edgecolor','none','facealpha',0.8);
+patch([t_stamp' fliplr(t_stamp')], [max(data.temp_in) fliplr(min(data.temp_in))]-273.15,[0.8 0.8 1.0],...
+    'edgecolor','none','facealpha',0.8);
+plot(t_stamp, mean(data.temp_out)-273.15,'k','linewidth',1.5);
+plot(t_stamp, mean(data.temp_in)-273.15,'b','linewidth',1.5);
+xlim([0 24]);
+ylabel('Temperature [^\circC]');
+
+subplot(3,2,2); hold on
+patch([t_stamp' fliplr(t_stamp')], [max(ach) fliplr(min(ach))],[0.8 0.8 0.8],...
+    'edgecolor','none','facealpha',0.8);
+plot(t_stamp, mean(ach),'k','linewidth',1.5);
+xlim([0 24]);
+ylim([0 20]);
+ylabel('ACH [1/h]');
+
+
+
+subplot(3,2,3); hold on
+patch([t_stamp' fliplr(t_stamp')], [max(data.wall_out) fliplr(min(data.wall_out))]-273.15,[0.8 0.8 1.0],...
+    'edgecolor','none','facealpha',0.8);
+patch([t_stamp' fliplr(t_stamp')], [max(data.wall_in) fliplr(min(data.wall_in))]-273.15,[1.0 0.8 0.8],...
+    'edgecolor','none','facealpha',0.8);
+plot(t_stamp, mean(data.wall_out)-273.15,'b','linewidth',1.5);
+plot(t_stamp, mean(data.wall_in)-273.15,'r','linewidth',1.5);
+xlim([0 24]);
+ylabel('Temperature [^\circC]');
+
+subplot(3,2,4); hold on
+patch([t_stamp' fliplr(t_stamp')], [max(data.roof_out) fliplr(min(data.roof_out))]-273.15,[0.8 0.8 1.0],...
+    'edgecolor','none','facealpha',0.9);
+patch([t_stamp' fliplr(t_stamp')], [max(data.roof_in) fliplr(min(data.roof_in))]-273.15,[1.0 0.8 0.8],...
+    'edgecolor','none','facealpha',0.9);
+plot(t_stamp, mean(data.roof_out)-273.15,'b','linewidth',1.5);
+plot(t_stamp, mean(data.roof_in)-273.15,'r','linewidth',1.5);
+xlim([0 24]);
+ylabel('Temperature [^\circC]');
+
+
+
+
+
+subplot(3,2,5); hold on
+patch([t_stamp' fliplr(t_stamp')], [max(data.rad) fliplr(min(data.rad))],[0.8 0.8 0.8],'edgecolor','none');
+plot(t_stamp, mean(data.rad),'k','linewidth',1.5);
+xlim([0 24]);
+ylabel('Solar radiation [W]');
+
+subplot(3,2,6); hold on
+patch([t_stamp' fliplr(t_stamp')], [max(data.wind) fliplr(min(data.wind))],[0.8 0.8 0.8],'edgecolor','none');
+plot(t_stamp, mean(data.wind),'k','linewidth',1.5);
+xlim([0 24]);
+ylabel('Wind speed [m/s]');
+
+
+
+
+
+
+
+%%
+
+% plot
 % clear;  clc;
 % close all;
 
