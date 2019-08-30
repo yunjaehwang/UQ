@@ -3,7 +3,7 @@
 
 % cler space and load output data
 clear;  clc;
-load('./data_summary.mat');
+load('data_summary.mat');
 load('/home/yunjaeh/OpenFOAM/yunjaeh-4.0/run/UQ/uq_2019/integral_time_stamp.mat');     % load time stamp
 
 %% --------------------------------------------------------------------- %%
@@ -58,8 +58,9 @@ xticks(12:12:36);   xticklabels({'Noon','Midnight','Noon'});
 title('Sobol indices');
 
 
-%% --------------------------------------------------------------------- %%
-% convergence of statistics (mean and std)
+
+
+%% convergence of statistics (mean and std)
 convergence_mean = zeros(5000,24);
 convergence_std = zeros(5000,24);
 for i=1:5000
