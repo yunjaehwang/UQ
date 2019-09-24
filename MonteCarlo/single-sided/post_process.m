@@ -1,7 +1,7 @@
 %% pre-process
 % read output files and filter
 clear;  clc;
-cd('/home/yunjaeh/github/UQ/MonteCarlo/single-sided/Night_SV');
+cd('/home/yunjaeh/github/UQ/MonteCarlo/single-sided/data_night_sv');
 mkdir ./output
 % num_param   = 9;        % # of uncertain parameters
 num_iter    = 50;       % # of total number of iteration
@@ -38,8 +38,8 @@ for iter = 1:num_iter
 %         f_out_raw = ['./output_',num2str(iter),'/result_',num2str(i),'.csv'];
 
          
-        data_temp = dlmread([fname,'.out'],' ',1,0);    %csvread([dir,'output_',num2str(iter),'/result_',num2str(i),'.csv'],1);
-%       
+        data_temp = dlmread([fname,'.out'],' ',1,0);    
+
         data.temp_out(idx,:) = data_temp(:,1)';
         data.rad(idx,:) = data_temp(:,2)';
         data.wind(idx,:) = data_temp(:,3)';
@@ -52,23 +52,12 @@ for iter = 1:num_iter
         data.roof_out(idx,:) = data_temp(:,10)';
         data.vent_rate(idx,: ) = data_temp(:,11)';
 
-% %         try
-% %         catch
-% %             display(['error in reading input, iteration: ', num2str(iter),', sample: ',num2str(i)]);
-% %             temp_in(idx,:) = NaN;
-% %             vent_rate(idx,:) = NaN;
-% %             wall_inner_a(idx,:) = NaN;
-% %             wall_inner_b(idx,:) = NaN;
-% %             wall_outer_a(idx,:) = NaN;
-% %             wall_outer_b(idx,:) = NaN;
-% %             continue
-% %         end
-% %         
     end
 end
 
 data.input = data_input;
 save('data_summary.mat','data');
+
 % figure();
 % for i=1:14
 %     subplot(3,5,i);
@@ -86,7 +75,7 @@ ach_in = 4.75;
 ach = data.vent_rate*3600/vol_house;
 
 for i=1:size(data.vent_rate,1)
-    ach(i,:) = ach(i,:) + ach_in*data.input(i,11);
+    ach(i,:) = ach(i,:) + data.input(i,11);
 end
 
 

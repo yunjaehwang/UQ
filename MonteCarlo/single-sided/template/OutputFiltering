@@ -21,7 +21,6 @@ f_roof=$(head -n 1 $FILE_OUTPUT | tr ',' '\n' | grep -n 'Conduction_roof_outer.p
 f_roof_in=$(head -n 1 $FILE_OUTPUT | tr ',' '\n' | grep -n 'Conduction_roof_inner.port_b.T' | awk -F: '{print$1}' )
 f_roof_out=$(head -n 1 $FILE_OUTPUT | tr ',' '\n' | grep -n 'Conduction_roof_outer.port_a.T' | awk -F: '{print$1}' )
 f_vrate=$(head -n 1 $FILE_OUTPUT | tr ',' '\n' | grep -n 'two_single_ventilation1.Ventilation_rate.y' | awk -F: '{print$1}' )
-echo $f_outdoor, $f_radiation, $f_wind
 awk -F, '{print $'$f_outdoor',$'$f_radiation',$'$f_wind',$'$f_indoor',$'$f_wall',$'$f_wall_in',$'$f_wall_out',$'$f_roof',$'$f_roof_in',$'$f_roof_out',$'$f_vrate'}' $FILE_OUTPUT > $FILE_FILTERED  
 # cp $FILE_OUTPUT $FILE_FILTERED
 

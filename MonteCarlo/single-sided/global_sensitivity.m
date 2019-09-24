@@ -71,7 +71,10 @@ up( 7,1) = 0.29;        up( 7,2) = 0.66;    % Absorptivity; wall
 up( 8,1) = 0.8;         up( 8,2) = 1.2;    % Coefficient 1
 up( 9,1) = 0.8;         up( 9,2) = 1.2;    % Coefficient 2
 up( 10,1) = 0.8;        up( 10,2) = 1.2;    % Coefficient 3
-up( 11,1) = 0.8;        up( 11,2) = 1.2;    % Infiltration
+% infiltration range
+% avg of min, mean, max: 3.9487, 4.3925, 4.8275
+% min(min), max(max): 3.27, 5.94
+up( 11,1) = 3.27;        up( 11,2) = 5.94;    % Infiltration
 up( 12,1) = -1.0;        up( 12,2) = 1.0;    % Temperature std
 up( 13,1) = -1.0;        up( 13,2) = 1.0;    % Radiation std
 up( 14,1) = -1.0;        up( 14,2) = 1.0;    % Wind std 
@@ -130,6 +133,7 @@ for iter = 1:num_iter
     system(['mv ./output ./data/output_',num2str(iter)])
     system('mkdir ./output')
 end  
+system('rmdir input output');
 
 delete(gcp('nocreate'));
 toc
