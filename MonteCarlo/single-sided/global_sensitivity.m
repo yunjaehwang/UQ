@@ -15,7 +15,7 @@ mkdir ./input
 mkdir ./output
 
 num_core    = 12;       % # of cores used for parallel process
-num_param   = 14;        % # of uncertain parameters
+num_param   = 9;        % # of uncertain parameters
 num_iter    = 50;       % # of total number of iteration
 num_sample  = 100;      % # of samples in each iteration
 
@@ -63,21 +63,21 @@ system(['echo ',message,' >> ./case.csv']);
 up = zeros(num_param, 2);
 up( 1,1) = 1;           up( 1,2) = 4;     % Heat convective coefficient; internal
 up( 2,1) = 0.8;         up( 2,2) = 1.2;     % Heat convective coefficient; external
-up( 3,1) = 52.7;        up( 3,2) = 75.9;    % Conductivity; roof
-up( 4,1) = 0.6;         up( 4,2) = 1.31;    % Conductivity; wall
-up( 5,1) = 0.1;         up( 5,2) = 0.2;    % Emissivity; roof
-up( 6,1) = 0.8;         up( 6,2) = 0.9;    % Emissivity; wall
-up( 7,1) = 0.29;        up( 7,2) = 0.66;    % Absorptivity; wall
-up( 8,1) = 0.8;         up( 8,2) = 1.2;    % Coefficient 1
-up( 9,1) = 0.8;         up( 9,2) = 1.2;    % Coefficient 2
-up( 10,1) = 0.8;        up( 10,2) = 1.2;    % Coefficient 3
+% up( 3,1) = 52.7;        up( 3,2) = 75.9;    % Conductivity; roof
+% up( 4,1) = 0.6;         up( 4,2) = 1.31;    % Conductivity; wall
+% up( 5,1) = 0.1;         up( 5,2) = 0.2;    % Emissivity; roof
+% up( 6,1) = 0.8;         up( 6,2) = 0.9;    % Emissivity; wall
+up( 3,1) = 0.29;        up( 3,2) = 0.66;    % Absorptivity; wall
+up( 4,1) = 1-0.29;         up( 4,2) = 1+0.29;    % Ventilation rate 1
+up( 5,1) = 1-0.29;         up( 5,2) = 1+0.29;    % Ventilation rate 2
+
 % infiltration range
 % avg of min, mean, max: 3.9487, 4.3925, 4.8275
 % min(min), max(max): 3.27, 5.94
-up( 11,1) = 3.27;        up( 11,2) = 5.94;    % Infiltration
-up( 12,1) = -1.0;        up( 12,2) = 1.0;    % Temperature std
-up( 13,1) = -1.0;        up( 13,2) = 1.0;    % Radiation std
-up( 14,1) = -1.0;        up( 14,2) = 1.0;    % Wind std 
+up( 6,1) = 3.27;        up( 6,2) = 5.94;    % Infiltration
+up( 7,1) = -1.0;        up( 7,2) = 1.0;    % Temperature std
+up( 8,1) = -1.0;        up( 8,2) = 1.0;    % Radiation std
+up( 9,1) = -1.0;        up( 9,2) = 1.0;    % Wind std 
 
 
 
@@ -106,11 +106,11 @@ for iter = 1:num_iter
         system(['echo ''',num2str(A(i,7)),''' >> ./input/UQ_input_',num2str(i),'.in']);
         system(['echo ''',num2str(A(i,8)),''' >> ./input/UQ_input_',num2str(i),'.in']);
         system(['echo ''',num2str(A(i,9)),''' >> ./input/UQ_input_',num2str(i),'.in']);
-        system(['echo ''',num2str(A(i,10)),''' >> ./input/UQ_input_',num2str(i),'.in']);
-        system(['echo ''',num2str(A(i,11)),''' >> ./input/UQ_input_',num2str(i),'.in']);
-        system(['echo ''',num2str(A(i,12)),''' >> ./input/UQ_input_',num2str(i),'.in']);
-        system(['echo ''',num2str(A(i,13)),''' >> ./input/UQ_input_',num2str(i),'.in']);
-        system(['echo ''',num2str(A(i,14)),''' >> ./input/UQ_input_',num2str(i),'.in']);
+%         system(['echo ''',num2str(A(i,10)),''' >> ./input/UQ_input_',num2str(i),'.in']);
+%         system(['echo ''',num2str(A(i,11)),''' >> ./input/UQ_input_',num2str(i),'.in']);
+%         system(['echo ''',num2str(A(i,12)),''' >> ./input/UQ_input_',num2str(i),'.in']);
+%         system(['echo ''',num2str(A(i,13)),''' >> ./input/UQ_input_',num2str(i),'.in']);
+%         system(['echo ''',num2str(A(i,14)),''' >> ./input/UQ_input_',num2str(i),'.in']);
         
     end
     

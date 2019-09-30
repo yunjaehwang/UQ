@@ -71,27 +71,73 @@ load('/home/yunjaeh/github/UQ/MonteCarlo/single-sided/integral_time_stamp.mat');
 
 
 vol_house = 17.72;
-ach_in = 4.75;
+% ach_in = 4.75;
 ach = data.vent_rate*3600/vol_house;
 
 for i=1:size(data.vent_rate,1)
     ach(i,:) = ach(i,:) + data.input(i,11);
 end
 
-
-
 figure();
-subplot(3,2,1); hold on
-patch([t_stamp' fliplr(t_stamp')], [max(data.temp_out) fliplr(min(data.temp_out))]-273.15,[0.8 0.8 0.8],...
-    'edgecolor','none','facealpha',0.8);
-patch([t_stamp' fliplr(t_stamp')], [max(data.temp_in) fliplr(min(data.temp_in))]-273.15,[0.8 0.8 1.0],...
-    'edgecolor','none','facealpha',0.8);
+
+%%% inputs
+% outdoor temperature
+subplot(2,3,1); hold on
 plot(t_stamp, mean(data.temp_out)-273.15,'k','linewidth',1.5);
 plot(t_stamp, mean(data.temp_in)-273.15,'b','linewidth',1.5);
+patch([t_stamp' fliplr(t_stamp')], [max(data.temp_out) fliplr(min(data.temp_out))]-273.15,[0.8 0.8 0.8],...
+    'edgecolor','none','facealpha',0.5);
+patch([t_stamp' fliplr(t_stamp')], [max(data.temp_in) fliplr(min(data.temp_in))]-273.15,[0.8 0.8 1.0],...
+    'edgecolor','none','facealpha',0.5);
+
+legend('Outdoor temperature','Indoor temperature');
 xlim([0 24]);
 ylabel('Temperature [^\circC]');
 
-subplot(3,2,2); hold on
+% solar radiation
+subplot(2,3,2); hold on
+patch([t_stamp' fliplr(t_stamp')], [max(data.rad) fliplr(min(data.rad))],[0.8 0.8 0.8],'edgecolor','none');
+plot(t_stamp, mean(data.rad),'k','linewidth',1.5);
+xlim([0 24]);
+ylabel('Solar radiation [W]');
+
+% wind speed
+subplot(2,3,3); hold on
+patch([t_stamp' fliplr(t_stamp')], [max(data.wind) fliplr(min(data.wind))],[0.8 0.8 0.8],'edgecolor','none');
+plot(t_stamp, mean(data.wind),'k','linewidth',1.5);
+xlim([0 24]);
+ylabel('Wind speed [m/s]');
+
+
+
+%%% outputs
+% wall surface temperature
+subplot(2,3,4); hold on
+plot(t_stamp, mean(data.wall_out)-273.15,'b','linewidth',1.5);
+plot(t_stamp, mean(data.wall_in)-273.15,'r','linewidth',1.5);
+patch([t_stamp' fliplr(t_stamp')], [max(data.wall_out) fliplr(min(data.wall_out))]-273.15,[0.8 0.8 1.0],...
+    'edgecolor','none','facealpha',0.5);
+patch([t_stamp' fliplr(t_stamp')], [max(data.wall_in) fliplr(min(data.wall_in))]-273.15,[1.0 0.8 0.8],...
+    'edgecolor','none','facealpha',0.5);
+xlim([0 24]);
+ylabel('Temperature [^\circC]');
+legend('Outer wall surface','Inner wall surface');
+
+% roof surface temperature
+subplot(2,3,5); hold on
+plot(t_stamp, mean(data.roof_out)-273.15,'b','linewidth',1.5);
+plot(t_stamp, mean(data.roof_in)-273.15,'r','linewidth',1.5);
+patch([t_stamp' fliplr(t_stamp')], [max(data.roof_out) fliplr(min(data.roof_out))]-273.15,[0.8 0.8 1.0],...
+    'edgecolor','none','facealpha',0.5);
+patch([t_stamp' fliplr(t_stamp')], [max(data.roof_in) fliplr(min(data.roof_in))]-273.15,[1.0 0.8 0.8],...
+    'edgecolor','none','facealpha',0.5);
+xlim([0 24]);
+ylabel('Temperature [^\circC]');
+legend('Outer roof surface','Inner roof surface');
+
+
+% ach
+subplot(2,3,6); hold on
 patch([t_stamp' fliplr(t_stamp')], [max(ach) fliplr(min(ach))],[0.8 0.8 0.8],...
     'edgecolor','none','facealpha',0.8);
 plot(t_stamp, mean(ach),'k','linewidth',1.5);
@@ -101,41 +147,9 @@ ylabel('ACH [1/h]');
 
 
 
-subplot(3,2,3); hold on
-patch([t_stamp' fliplr(t_stamp')], [max(data.wall_out) fliplr(min(data.wall_out))]-273.15,[0.8 0.8 1.0],...
-    'edgecolor','none','facealpha',0.8);
-patch([t_stamp' fliplr(t_stamp')], [max(data.wall_in) fliplr(min(data.wall_in))]-273.15,[1.0 0.8 0.8],...
-    'edgecolor','none','facealpha',0.8);
-plot(t_stamp, mean(data.wall_out)-273.15,'b','linewidth',1.5);
-plot(t_stamp, mean(data.wall_in)-273.15,'r','linewidth',1.5);
-xlim([0 24]);
-ylabel('Temperature [^\circC]');
-
-subplot(3,2,4); hold on
-patch([t_stamp' fliplr(t_stamp')], [max(data.roof_out) fliplr(min(data.roof_out))]-273.15,[0.8 0.8 1.0],...
-    'edgecolor','none','facealpha',0.9);
-patch([t_stamp' fliplr(t_stamp')], [max(data.roof_in) fliplr(min(data.roof_in))]-273.15,[1.0 0.8 0.8],...
-    'edgecolor','none','facealpha',0.9);
-plot(t_stamp, mean(data.roof_out)-273.15,'b','linewidth',1.5);
-plot(t_stamp, mean(data.roof_in)-273.15,'r','linewidth',1.5);
-xlim([0 24]);
-ylabel('Temperature [^\circC]');
 
 
 
-
-
-subplot(3,2,5); hold on
-patch([t_stamp' fliplr(t_stamp')], [max(data.rad) fliplr(min(data.rad))],[0.8 0.8 0.8],'edgecolor','none');
-plot(t_stamp, mean(data.rad),'k','linewidth',1.5);
-xlim([0 24]);
-ylabel('Solar radiation [W]');
-
-subplot(3,2,6); hold on
-patch([t_stamp' fliplr(t_stamp')], [max(data.wind) fliplr(min(data.wind))],[0.8 0.8 0.8],'edgecolor','none');
-plot(t_stamp, mean(data.wind),'k','linewidth',1.5);
-xlim([0 24]);
-ylabel('Wind speed [m/s]');
 
 
 

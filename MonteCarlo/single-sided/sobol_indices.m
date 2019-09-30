@@ -8,21 +8,29 @@ load('/home/yunjaeh/OpenFOAM/yunjaeh-4.0/run/UQ/uq_2019/integral_time_stamp.mat'
 
 %% --------------------------------------------------------------------- %%
 % uncertain input parameters
-numParam   = 7;        % # of uncertain parameters
-up( 1,1) = 1;        up( 1,2) = 4;     % Heat convective coefficient; internal
-up( 2,1) = 1;        up( 2,2) = 10;     % Heat convective coefficient; external
-up( 3,1) = 0.6;      up( 3,2) = 1.31;    % Conductivity; roof
-up( 4,1) = 52.7;      up( 4,2) = 75.9;    % Conductivity; wall
-up( 5,1) = 0.1;      up( 5,2) = 0.2;    % Emissivity; roof
-up( 6,1) = 0.8;      up( 6,2) = 0.9;    % Emissivity; wall
-% up( 7,1) = 0.2;      up( 7,2) = 0.5;    % C_D; opening 1
-% up( 8,1) = 0.4;      up( 8,2) = 0.8;    % C_D; opening 2
-up( 7,1) = 0.8;      up( 7,2) = 1.2;    % Infiltration
+numParam   = 14;        % # of uncertain parameters
+up( 1,1) = 1;           up( 1,2) = 4;     % Heat convective coefficient; internal
+up( 2,1) = 0.8;         up( 2,2) = 1.2;     % Heat convective coefficient; external
+up( 3,1) = 52.7;        up( 3,2) = 75.9;    % Conductivity; roof
+up( 4,1) = 0.6;         up( 4,2) = 1.31;    % Conductivity; wall
+up( 5,1) = 0.1;         up( 5,2) = 0.2;    % Emissivity; roof
+up( 6,1) = 0.8;         up( 6,2) = 0.9;    % Emissivity; wall
+up( 7,1) = 0.29;        up( 7,2) = 0.66;    % Absorptivity; wall
+up( 8,1) = 0.8;         up( 8,2) = 1.2;    % Coefficient 1
+up( 9,1) = 0.8;         up( 9,2) = 1.2;    % Coefficient 2
+up( 10,1) = 0.8;        up( 10,2) = 1.2;    % Coefficient 3
+% infiltration range
+% avg of min, mean, max: 3.9487, 4.3925, 4.8275
+% min(min), max(max): 3.27, 5.94
+up( 11,1) = 3.27;        up( 11,2) = 5.94;    % Infiltration
+up( 12,1) = -1.0;        up( 12,2) = 1.0;    % Temperature std
+up( 13,1) = -1.0;        up( 13,2) = 1.0;    % Radiation std
+up( 14,1) = -1.0;        up( 14,2) = 1.0;    % Wind std 
 
 
 %% --------------------------------------------------------------------- %%
 % quantity of interest: could be tempeature, ACH, ...
-qoi = data.temp_in;
+qoi = data.vent_rate;
 var_total =  var(qoi);
 sobolIndices = zeros(numParam,3377);
 
@@ -45,14 +53,20 @@ mean(sum(sobolIndices))
 % plot sobol indices
 figure();
 hold on
-for p=1:numParam
+% for p=1:numParam
+% for p=1:7
+for p=8:14
    plot(t_stamp, sobolIndices(p,:),'linewidth',2);
 end
-legend('h_{in}', 'h_{out}', 'k_{roof}', 'k_{wall}', ...
-    '\epsilon_{roof}','\epsilon_{wall}', 'Infiltration',...
-    'location','eastoutside');
+% legend('h_{in}', 'h_{out}', 'k_{roof}', 'k_{wall}', '\epsilon_{roof}','\epsilon_{wall}','Absorptivity',...
 
-xlim([12 36]);      ylim([0 1.2]);
+legend('Coefficient1','Coefficient2','Coefficient3',...
+      'Infiltration','Temp std','Rad std','Wind std',...
+'location','eastoutside');    
+
+    
+
+xlim([0 24]);      ylim([0 1.0]);
 xlabel('Time [hr]');    ylabel('Sobol index'); 
 xticks(12:12:36);   xticklabels({'Noon','Midnight','Noon'});
 title('Sobol indices');

@@ -43,20 +43,19 @@ VAL_AREA_OPENING_2=$(awk 'NR==5{print $0}' UQ_input.in)
 # uncertain parameters
 VAL_CONVECTION_COEF_INNER=$(awk 'NR==6{print $0}' UQ_input.in) 
 VAL_CONVECTION_COEF_OUTER=$(awk 'NR==7{print $0}' UQ_input.in)
-VAL_CONDUCTIVITY_ROOF=$(awk 'NR==8{print $0}' UQ_input.in) 
-VAL_CONDUCTIVITY_WALL=$(awk 'NR==9{print $0}' UQ_input.in) 
-VAL_EMISSIVITY_ROOF=$(awk 'NR==10{print $0}' UQ_input.in) 
-VAL_EMISSIVITY_WALL=$(awk 'NR==11{print $0}' UQ_input.in) 
-VAL_REFLECTANCE_ROOF=$(awk 'NR==12{print $0}' UQ_input.in) 
-VAL_COEFFICIENT_1=$(awk 'NR==13{print $0}' UQ_input.in) 
-VAL_COEFFICIENT_2=$(awk 'NR==14{print $0}' UQ_input.in) 
-VAL_COEFFICIENT_3=$(awk 'NR==15{print $0}' UQ_input.in) 
-VAL_INFILTRATION=$(awk 'NR==16{print $0}' UQ_input.in) 
+# VAL_CONDUCTIVITY_ROOF=$(awk 'NR==8{print $0}' UQ_input.in) 
+# VAL_CONDUCTIVITY_WALL=$(awk 'NR==9{print $0}' UQ_input.in) 
+# VAL_EMISSIVITY_ROOF=$(awk 'NR==10{print $0}' UQ_input.in) 
+# VAL_EMISSIVITY_WALL=$(awk 'NR==11{print $0}' UQ_input.in) 
+VAL_REFLECTANCE_ROOF=$(awk 'NR==8{print $0}' UQ_input.in) 
+VAL_VENTILATION_RATE_1=$(awk 'NR==9{print $0}' UQ_input.in) 
+VAL_VENTILATION_RATE_2=$(awk 'NR==10{print $0}' UQ_input.in) 
+VAL_INFILTRATION=$(awk 'NR==11{print $0}' UQ_input.in) 
 
 # add input factors (outdoor temperature, radiation, wind)
-VAL_STD_TEMPERATURE=$(awk 'NR==17{print $0}' UQ_input.in) 
-VAL_STD_RADIATION=$(awk 'NR==18{print $0}' UQ_input.in) 
-VAL_STD_WIND=$(awk 'NR==19{print $0}' UQ_input.in) 
+VAL_STD_TEMPERATURE=$(awk 'NR==12{print $0}' UQ_input.in) 
+VAL_STD_RADIATION=$(awk 'NR==13{print $0}' UQ_input.in) 
+VAL_STD_WIND=$(awk 'NR==14{print $0}' UQ_input.in) 
 
  
 # -------------------- substitution -------------------- #
@@ -67,9 +66,8 @@ sed -i "s/AREA_OPENING_1/$VAL_AREA_OPENING_1/g" $VENTILATION_MODEL
 sed -i "s/AREA_OPENING_2/$VAL_AREA_OPENING_2/g" $VENTILATION_MODEL
 
 ### 2. Coefficients in ventilation models
-sed -i "s/COEFFICIENT_1/$VAL_COEFFICIENT_1/g" $VENTILATION_MODEL
-sed -i "s/COEFFICIENT_2/$VAL_COEFFICIENT_2/g" $VENTILATION_MODEL
-sed -i "s/COEFFICIENT_3/$VAL_COEFFICIENT_3/g" $VENTILATION_MODEL
+sed -i "s/VENTILATION_RATE_1/$VAL_VENTILATION_RATE_1/g" $VENTILATION_MODEL
+sed -i "s/VENTILATION_RATE_2/$VAL_VENTILATION_RATE_2/g" $VENTILATION_MODEL
 
 ### 3. Date 
 sed "s/DATA_DATE/$VAL_DATA_DATE/g" $MAIN_TEMPLATE > $MAIN_MODEL
@@ -77,10 +75,10 @@ sed "s/DATA_DATE/$VAL_DATA_DATE/g" $MAIN_TEMPLATE > $MAIN_MODEL
 ### 4. Heat transfer coefficients
 sed -i "s/CONVECTION_COEF_INNER/$VAL_CONVECTION_COEF_INNER/g"  $MAIN_MODEL
 sed -i "s/CONVECTION_COEF_OUTER/$VAL_CONVECTION_COEF_OUTER/g" $MAIN_MODEL
-sed -i "s/CONDUCTIVITY_WALL/$VAL_CONDUCTIVITY_WALL/g" $MAIN_MODEL
-sed -i "s/CONDUCTIVITY_ROOF/$VAL_CONDUCTIVITY_ROOF/g" $MAIN_MODEL
-sed -i "s/EMISSIVITY_WALL/$VAL_EMISSIVITY_WALL/g" $MAIN_MODEL
-sed -i "s/EMISSIVITY_ROOF/$VAL_EMISSIVITY_ROOF/g" $MAIN_MODEL
+# sed -i "s/CONDUCTIVITY_WALL/$VAL_CONDUCTIVITY_WALL/g" $MAIN_MODEL
+# sed -i "s/CONDUCTIVITY_ROOF/$VAL_CONDUCTIVITY_ROOF/g" $MAIN_MODEL
+# sed -i "s/EMISSIVITY_WALL/$VAL_EMISSIVITY_WALL/g" $MAIN_MODEL
+# sed -i "s/EMISSIVITY_ROOF/$VAL_EMISSIVITY_ROOF/g" $MAIN_MODEL
 sed -i "s/REFLECTANCE_ROOF/$VAL_REFLECTANCE_ROOF/g" $MAIN_MODEL
 sed -i "s/INFILTRATION/$VAL_INFILTRATION/g" $MAIN_MODEL
 
@@ -116,19 +114,30 @@ echo $'\n\tSimulation Start\n'
 # echo "omc $FILE_SCRIPT"
 omc $FILE_SCRIPT
 
+# First written: Apr. 30. 2019
+# Last modified: Aug. 27. 2019
+# by Yunjae Hwang, yunjaeh@stanford.edu
 
+# FILE_OUTPUT=$1
+# FILE_FILTERED=$2
 # -------------------- filter output files -------------------- #
 # filtering variables
-# f_indoor=$(head -n 1 $FILE_OUTPUT | tr ',' '\n' | grep -n 'Temperature_Indoor.T' | awk -F: '{print$1}' )
-# f_wall=$(head -n 1 $FILE_OUTPUT | tr ',' '\n' | grep -n 'Conduction_wall1_outer.port_b.T' | awk -F: '{print$1}' )
-# f_wall_in=$(head -n 1 $FILE_OUTPUT | tr ',' '\n' | grep -n 'Conduction_wall1_inner.port_b.T' | awk -F: '{print$1}' )
-# f_wall_out=$(head -n 1 $FILE_OUTPUT | tr ',' '\n' | grep -n 'Conduction_wall1_outer.port_a.T' | awk -F: '{print$1}' )
-# f_roof=$(head -n 1 $FILE_OUTPUT | tr ',' '\n' | grep -n 'Conduction_roof_outer.port_b.T' | awk -F: '{print$1}' )
-# f_roof_in=$(head -n 1 $FILE_OUTPUT | tr ',' '\n' | grep -n 'Conduction_roof_inner.port_b.T' | awk -F: '{print$1}' )
-# f_roof_out=$(head -n 1 $FILE_OUTPUT | tr ',' '\n' | grep -n 'Conduction_roof_outer.port_a.T' | awk -F: '{print$1}' )
-# f_vrate=$(head -n 1 $FILE_OUTPUT | tr ',' '\n' | grep -n 'two_single_ventilation1.Ventilation_rate.y' | awk -F: '{print$1}' )
-# awk -F, '{print $'$f_indoor',$'$f_wall',$'$f_wall_in',$'$f_wall_out',$'$f_roof',$'$f_roof_in',$'$f_roof_out',$'$f_vrate'}' $FILE_OUTPUT > $FILE_FILTERED  
-cp $FILE_OUTPUT $FILE_FILTERED
+f_outdoor=$(head -n 1 $FILE_OUTPUT | tr ',' '\n' | grep -n 'OutdoorTemperature.y' | awk -F: '{print$1}' )
+f_radiation=$(head -n 1 $FILE_OUTPUT | tr ',' '\n' | grep -n 'SolarRadiation.y' | awk -F: '{print$1}' )
+f_wind=$(head -n 1 $FILE_OUTPUT | tr ',' '\n' | grep -n 'WindSpeed.y' | awk -F: '{print$1}' )
+f_radiation=101
+f_wind=106
+f_indoor=$(head -n 1 $FILE_OUTPUT | tr ',' '\n' | grep -n 'Temperature_Indoor.T' | awk -F: '{print$1}' )
+f_wall=$(head -n 1 $FILE_OUTPUT | tr ',' '\n' | grep -n 'Conduction_wall1_outer.port_b.T' | awk -F: '{print$1}' )
+f_wall_in=$(head -n 1 $FILE_OUTPUT | tr ',' '\n' | grep -n 'Conduction_wall1_inner.port_b.T' | awk -F: '{print$1}' )
+f_wall_out=$(head -n 1 $FILE_OUTPUT | tr ',' '\n' | grep -n 'Conduction_wall1_outer.port_a.T' | awk -F: '{print$1}' )
+f_roof=$(head -n 1 $FILE_OUTPUT | tr ',' '\n' | grep -n 'Conduction_roof_outer.port_b.T' | awk -F: '{print$1}' )
+f_roof_in=$(head -n 1 $FILE_OUTPUT | tr ',' '\n' | grep -n 'Conduction_roof_inner.port_b.T' | awk -F: '{print$1}' )
+f_roof_out=$(head -n 1 $FILE_OUTPUT | tr ',' '\n' | grep -n 'Conduction_roof_outer.port_a.T' | awk -F: '{print$1}' )
+f_vrate=$(head -n 1 $FILE_OUTPUT | tr ',' '\n' | grep -n 'two_single_ventilation1.Ventilation_rate.y' | awk -F: '{print$1}' )
+awk -F, '{print $'$f_outdoor',$'$f_radiation',$'$f_wind',$'$f_indoor',$'$f_wall',$'$f_wall_in',$'$f_wall_out',$'$f_roof',$'$f_roof_in',$'$f_roof_out',$'$f_vrate'}' $FILE_OUTPUT > $FILE_FILTERED  
+
+# cp $FILE_OUTPUT $FILE_FILTERED
 
 
 

@@ -1,11 +1,11 @@
 model Two_single_ventilation
   Modelica.Blocks.Math.Add add1(k1 = +1, k2 = -1) annotation(
     Placement(visible = true, transformation(origin = {-98, -90}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
-  Modelica.Blocks.Sources.Constant C1(k = 0.001 * COEFFICIENT_1) annotation(
+  Modelica.Blocks.Sources.Constant C1(k = 0.001) annotation(
     Placement(visible = true, transformation(origin = {-90, 106}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
-  Modelica.Blocks.Sources.Constant C2(k = 0.0035 * COEFFICIENT_2) annotation(
+  Modelica.Blocks.Sources.Constant C2(k = 0.0035) annotation(
     Placement(visible = true, transformation(origin = {-90, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
-  Modelica.Blocks.Sources.Constant C3(k = 0.01 * COEFFICIENT_3) annotation(
+  Modelica.Blocks.Sources.Constant C3(k = 0.01) annotation(
     Placement(visible = true, transformation(origin = {-42, 4}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
   Modelica.Blocks.Math.Sqrt sqrt1 annotation(
     Placement(visible = true, transformation(origin = {50, 50}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
@@ -38,7 +38,7 @@ model Two_single_ventilation
   Modelica.Blocks.Math.Sqrt sqrt2 annotation(
     Placement(visible = true, transformation(origin = {50, -30}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
   Modelica.Blocks.Math.MultiProduct multiProduct3(nu = 3) annotation(
-    Placement(visible = true, transformation(origin = {86, 64}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+    Placement(visible = true, transformation(origin = {88, 64}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
   Modelica.Blocks.Math.MultiProduct multiProduct4(nu = 3) annotation(
     Placement(visible = true, transformation(origin = {86, -28}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
   Modelica.Thermal.HeatTransfer.Interfaces.HeatPort_b Port_indoor annotation(
@@ -53,9 +53,17 @@ model Two_single_ventilation
     Placement(visible = true, transformation(origin = {120, 46}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
   Modelica.Blocks.Math.MultiProduct multiProduct5(nu = 3)  annotation(
     Placement(visible = true, transformation(origin = {168, -16}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
-  Modelica.Blocks.Math.Add Ventilation_rate annotation(
+  Modelica.Blocks.Math.Add Ventilation_rate(k1 = VENTILATION_RATE_1, k2 = VENTILATION_RATE_2)  annotation(
     Placement(visible = true, transformation(origin = {122, 12}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
 equation
+  connect(const.y, multiProduct3.u[1]) annotation(
+    Line(points = {{62, 10}, {74, 10}, {74, 64}, {78, 64}}, color = {0, 0, 127}));
+  connect(Area_1.y, multiProduct3.u[2]) annotation(
+    Line(points = {{62, 82}, {74, 82}, {74, 64}, {78, 64}}, color = {0, 0, 127}));
+  connect(sqrt1.y, multiProduct3.u[3]) annotation(
+    Line(points = {{62, 50}, {78, 50}, {78, 64}}, color = {0, 0, 127}));
+  connect(multiProduct3.y, Ventilation_rate.u1) annotation(
+    Line(points = {{100, 64}, {100, 18}, {110, 18}}, color = {0, 0, 127}));
   connect(Ventilation_param.y, multiProduct5.u[1]) annotation(
     Line(points = {{131, 46}, {148, 46}, {148, -12}, {158, -12}, {158, -16}}, color = {0, 0, 127}));
   connect(add1.y, multiProduct5.u[3]) annotation(
@@ -76,20 +84,12 @@ equation
     Line(points = {{-62, -114}, {186, -114}, {186, -84}}, color = {191, 0, 0}));
   connect(multiProduct4.y, Ventilation_rate.u2) annotation(
     Line(points = {{98, -28}, {102, -28}, {102, 6}, {110, 6}, {110, 6}}, color = {0, 0, 127}));
-  connect(multiProduct3.y, Ventilation_rate.u1) annotation(
-    Line(points = {{98, 64}, {100, 64}, {100, 18}, {110, 18}, {110, 18}}, color = {0, 0, 127}));
-  connect(sqrt1.y, multiProduct3.u[3]) annotation(
-    Line(points = {{62, 50}, {76, 50}, {76, 64}, {76, 64}}, color = {0, 0, 127}));
   connect(sqrt2.y, multiProduct4.u[3]) annotation(
     Line(points = {{62, -30}, {76, -30}, {76, -28}, {76, -28}}, color = {0, 0, 127}));
   connect(Area_2.y, multiProduct4.u[2]) annotation(
     Line(points = {{62, -60}, {76, -60}, {76, -28}, {76, -28}}, color = {0, 0, 127}));
-  connect(Area_1.y, multiProduct3.u[2]) annotation(
-    Line(points = {{62, 82}, {74, 82}, {74, 64}, {76, 64}}, color = {0, 0, 127}));
   connect(const.y, multiProduct4.u[1]) annotation(
     Line(points = {{62, 10}, {74, 10}, {74, -28}, {76, -28}}, color = {0, 0, 127}));
-  connect(const.y, multiProduct3.u[1]) annotation(
-    Line(points = {{62, 10}, {74, 10}, {74, 64}, {76, 64}}, color = {0, 0, 127}));
   connect(multiSum2.y, sqrt2.u) annotation(
     Line(points = {{22, -30}, {38, -30}, {38, -30}, {38, -30}}, color = {0, 0, 127}));
   connect(multiSum1.y, sqrt1.u) annotation(
