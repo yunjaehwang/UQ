@@ -1,9 +1,9 @@
 %% pre-process
 % read output files and filter
 clear;  clc;
-cd('/home/yunjaeh/github/UQ/MonteCarlo/single-sided/data_night_sv');
+cd('/home/yunjaeh/github/UQ/MonteCarlo/single-sided/data');
 mkdir ./output
-% num_param   = 9;        % # of uncertain parameters
+num_param   = 9;        % # of uncertain parameters
 num_iter    = 50;       % # of total number of iteration
 num_sample  = 100;      % # of samples in each iteration
 
@@ -32,13 +32,13 @@ for iter = 1:num_iter
     
     for i =1:num_sample
         fname = ['./output_',num2str(iter),'/result_',num2str(i)];
-        system(['./OutputFiltering ',fname,'.csv ', fname,'.out']);
+        % system(['./OutputFiltering ',fname,'.csv ', fname,'.out']);
 
         idx = num_sample * (iter-1) + i
 %         f_out_raw = ['./output_',num2str(iter),'/result_',num2str(i),'.csv'];
 
          
-        data_temp = dlmread([fname,'.out'],' ',1,0);    
+        data_temp = dlmread([fname,'.csv'],' ',1,0);    
 
         data.temp_out(idx,:) = data_temp(:,1)';
         data.rad(idx,:) = data_temp(:,2)';
@@ -58,11 +58,11 @@ end
 data.input = data_input;
 save('data_summary.mat','data');
 
-% figure();
-% for i=1:14
-%     subplot(3,5,i);
-%     histogram(data_input(:,i),20);
-% end
+figure();
+for i=1:num_param
+    subplot(3,5,i);
+    histogram(data_input(:,i),20);
+end
 
 
 
@@ -75,7 +75,7 @@ vol_house = 17.72;
 ach = data.vent_rate*3600/vol_house;
 
 for i=1:size(data.vent_rate,1)
-    ach(i,:) = ach(i,:) + data.input(i,11);
+    ach(i,:) = ach(i,:) + data.input(i,6);
 end
 
 figure();
@@ -148,9 +148,7 @@ ylabel('ACH [1/h]');
 
 
 
-
-
-
+%% add temperature measurements and compare it to the prediction result
 
 
 

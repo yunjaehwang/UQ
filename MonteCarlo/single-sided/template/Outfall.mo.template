@@ -1,21 +1,21 @@
 model Outfall
   Modelica.Thermal.HeatTransfer.Sensors.TemperatureSensor Temperature_Indoor annotation(
     Placement(visible = true, transformation(origin = {136, 82}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
-  Modelica.Thermal.HeatTransfer.Components.ThermalConductor Conduction_wall1_inner(G = 33.10) annotation(
+  Modelica.Thermal.HeatTransfer.Components.ThermalConductor Conduction_wall1_inner(G = 33.10 * 0.95) annotation(
     Placement(visible = true, transformation(origin = {-46, 44}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
-  Modelica.Thermal.HeatTransfer.Components.ThermalConductor Conduction_wall1_outer(G = 33.10) annotation(
+  Modelica.Thermal.HeatTransfer.Components.ThermalConductor Conduction_wall1_outer(G = 33.10 * 0.95) annotation(
     Placement(visible = true, transformation(origin = {-86, 44}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
-  Modelica.Thermal.HeatTransfer.Components.ThermalConductor Conduction_roof_outer(G = 122861.25) annotation(
+  Modelica.Thermal.HeatTransfer.Components.ThermalConductor Conduction_roof_outer(G = 122861.25 * 67) annotation(
     Placement(visible = true, transformation(origin = {-94, 102}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
-  Modelica.Thermal.HeatTransfer.Components.ThermalConductor Conduction_roof_inner(G = 122861.25) annotation(
+  Modelica.Thermal.HeatTransfer.Components.ThermalConductor Conduction_roof_inner(G = 122861.25 * 67) annotation(
     Placement(visible = true, transformation(origin = {-46, 102}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
-  Modelica.Thermal.HeatTransfer.Components.ThermalConductor Conduction_wall3_outer(G = 30.86) annotation(
+  Modelica.Thermal.HeatTransfer.Components.ThermalConductor Conduction_wall3_outer(G = 30.86 * 0.95) annotation(
     Placement(visible = true, transformation(origin = {-86, -6}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
-  Modelica.Thermal.HeatTransfer.Components.ThermalConductor Conduction_wall3_inner(G = 30.86) annotation(
+  Modelica.Thermal.HeatTransfer.Components.ThermalConductor Conduction_wall3_inner(G = 30.86 * 0.95) annotation(
     Placement(visible = true, transformation(origin = {-46, -6}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
-  Modelica.Thermal.HeatTransfer.Components.ThermalConductor Conduction_wall4_outer(G = 23.73) annotation(
+  Modelica.Thermal.HeatTransfer.Components.ThermalConductor Conduction_wall4_outer(G = 23.73 * 0.95) annotation(
     Placement(visible = true, transformation(origin = {-86, -46}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
-  Modelica.Thermal.HeatTransfer.Components.ThermalConductor Conduction_wall4_inner(G = 23.73) annotation(
+  Modelica.Thermal.HeatTransfer.Components.ThermalConductor Conduction_wall4_inner(G = 23.73 * 0.95) annotation(
     Placement(visible = true, transformation(origin = {-46, -46}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
   Modelica.Thermal.HeatTransfer.Components.HeatCapacitor Capacitor_roof(C = 22427, T(fixed = true, start = 313.15)) annotation(
     Placement(visible = true, transformation(origin = {-66, 112}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
@@ -41,13 +41,13 @@ model Outfall
     Placement(visible = true, transformation(origin = {-126, -46}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
   Modelica.Thermal.HeatTransfer.Components.Convection Convection_wall3_outer annotation(
     Placement(visible = true, transformation(origin = {-126, 4}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
-  Modelica.Thermal.HeatTransfer.Components.BodyRadiation Radiation_roof_outer(Gr = 7.335) annotation(
+  Modelica.Thermal.HeatTransfer.Components.BodyRadiation Radiation_roof_outer(Gr = 7.335 * 0.15) annotation(
     Placement(visible = true, transformation(origin = {-128, 98}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
-  Modelica.Thermal.HeatTransfer.Components.BodyRadiation Radiation_wall1_outer(Gr = 7.881) annotation(
+  Modelica.Thermal.HeatTransfer.Components.BodyRadiation Radiation_wall1_outer(Gr = 7.881 * 0.85) annotation(
     Placement(visible = true, transformation(origin = {-126, 34}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
-  Modelica.Thermal.HeatTransfer.Components.BodyRadiation Radiation_wall3_outer(Gr = 7.348) annotation(
+  Modelica.Thermal.HeatTransfer.Components.BodyRadiation Radiation_wall3_outer(Gr = 7.348 * 0.85) annotation(
     Placement(visible = true, transformation(origin = {-126, -14}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
-  Modelica.Thermal.HeatTransfer.Components.BodyRadiation Radiation_wall4_outer(Gr = 5.650) annotation(
+  Modelica.Thermal.HeatTransfer.Components.BodyRadiation Radiation_wall4_outer(Gr = 5.650 * 0.85) annotation(
     Placement(visible = true, transformation(origin = {-124, -72}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
   Modelica.Thermal.HeatTransfer.Components.HeatCapacitor Capacitor_indoor_air(C = 21841, T(fixed = true, start = 301.15)) annotation(
     Placement(visible = true, transformation(origin = {114, 112}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
@@ -75,13 +75,13 @@ model Outfall
     Placement(visible = true, transformation(origin = {-26, -30}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
   Modelica.Blocks.Sources.Constant Convection_coef_floor(k = 7.316 * CONVECTION_COEF_INNER) annotation(
     Placement(visible = true, transformation(origin = {-52, -78}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
-  Modelica.Thermal.HeatTransfer.Components.BodyRadiation Radiation_roof_inner(Gr = 7.335) annotation(
+  Modelica.Thermal.HeatTransfer.Components.BodyRadiation Radiation_roof_inner(Gr = 7.335 * 0.15) annotation(
     Placement(visible = true, transformation(origin = {-6, 92}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
-  Modelica.Thermal.HeatTransfer.Components.BodyRadiation Radiation_wall1_inner(Gr = 7.881) annotation(
+  Modelica.Thermal.HeatTransfer.Components.BodyRadiation Radiation_wall1_inner(Gr = 7.881 * 0.85) annotation(
     Placement(visible = true, transformation(origin = {-6, 34}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
-  Modelica.Thermal.HeatTransfer.Components.BodyRadiation Radiation_wall3_inner(Gr = 7.348) annotation(
+  Modelica.Thermal.HeatTransfer.Components.BodyRadiation Radiation_wall3_inner(Gr = 7.348 * 0.85) annotation(
     Placement(visible = true, transformation(origin = {-6, -16}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
-  Modelica.Thermal.HeatTransfer.Components.BodyRadiation Radiation_wall4_inner(Gr = 5.650) annotation(
+  Modelica.Thermal.HeatTransfer.Components.BodyRadiation Radiation_wall4_inner(Gr = 5.650 * 0.85) annotation(
     Placement(visible = true, transformation(origin = {-6, -66}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
   Modelica.Thermal.HeatTransfer.Components.BodyRadiation Radiation_floor(Gr = 7.316 * 0.85) annotation(
     Placement(visible = true, transformation(origin = {-2, -122}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
