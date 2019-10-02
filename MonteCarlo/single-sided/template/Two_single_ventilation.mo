@@ -1,4 +1,15 @@
 model Two_single_ventilation
+// fixed parameters
+  constant Real area_opening_1 = 0.62;
+  constant Real area_opening_2 = 0.05;
+  constant Real height_1 = 0.91;
+  constant Real height_2 = 0.43;
+
+// uncertain parameters
+  constant Real ventilation_rate_1 = 1.02;
+  constant Real ventilation_rate_2 = 1.3;
+
+
   Modelica.Blocks.Math.Add add1(k1 = +1, k2 = -1) annotation(
     Placement(visible = true, transformation(origin = {-98, -90}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
   Modelica.Blocks.Sources.Constant C1(k = 0.001) annotation(
@@ -23,13 +34,13 @@ model Two_single_ventilation
     Placement(visible = true, transformation(origin = {-42, 30}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
   Modelica.Blocks.Math.MultiProduct multiProduct2(nu = 3) annotation(
     Placement(visible = true, transformation(origin = {-40, -30}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
-  Modelica.Blocks.Sources.Constant Area_1(k = 0.62)  annotation(
+  Modelica.Blocks.Sources.Constant Area_1(k = area_opening_1)  annotation(
     Placement(visible = true, transformation(origin = {50, 82}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
-  Modelica.Blocks.Sources.Constant Area_2(k = 0.05)  annotation(
+  Modelica.Blocks.Sources.Constant Area_2(k = area_opening_2)  annotation(
     Placement(visible = true, transformation(origin = {50, -60}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
-  Modelica.Blocks.Sources.Constant Height_1(k = 0.91)  annotation(
+  Modelica.Blocks.Sources.Constant Height_1(k = height_1)  annotation(
     Placement(visible = true, transformation(origin = {-90, 30}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
-  Modelica.Blocks.Sources.Constant Height_2(k = 0.43)  annotation(
+  Modelica.Blocks.Sources.Constant Height_2(k = height_2)  annotation(
     Placement(visible = true, transformation(origin = {-90, -30}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
   Modelica.Blocks.Math.MultiSum multiSum1(nu = 3)  annotation(
     Placement(visible = true, transformation(origin = {10, 50}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
@@ -53,7 +64,7 @@ model Two_single_ventilation
     Placement(visible = true, transformation(origin = {120, 46}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
   Modelica.Blocks.Math.MultiProduct multiProduct5(nu = 3)  annotation(
     Placement(visible = true, transformation(origin = {168, -16}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
-  Modelica.Blocks.Math.Add Ventilation_rate(k1 = 1.02, k2 = 1.3)  annotation(
+  Modelica.Blocks.Math.Add Ventilation_rate(k1 = ventilation_rate_1, k2 = ventilation_rate_2)  annotation(
     Placement(visible = true, transformation(origin = {122, 12}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
 equation
   connect(const.y, multiProduct3.u[1]) annotation(
