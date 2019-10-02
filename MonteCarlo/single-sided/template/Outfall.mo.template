@@ -93,7 +93,7 @@ model Outfall
     Placement(visible = true, transformation(origin = {-232, 152}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
   Modelica.Blocks.Sources.Constant roof_emissivity(k = 7.3162 * 14.86 / 20.0 * (1 - REFLECTANCE_ROOF)) annotation(
     Placement(visible = true, transformation(origin = {-266, 130}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
-  Modelica.Blocks.Sources.Constant Floor_temperature(k = 299.15) annotation(
+  Modelica.Blocks.Sources.Constant Floor_temperature(k = 294.67) annotation(
     Placement(visible = true, transformation(origin = {-148, -112}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
   Modelica.Blocks.Math.Sqrt sqrt1 annotation(
     Placement(visible = true, transformation(origin = {-312, 62}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));

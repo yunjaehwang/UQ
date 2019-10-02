@@ -67,7 +67,7 @@ up( 2,1) = 0.8;         up( 2,2) = 1.2;     % Heat convective coefficient; exter
 % up( 4,1) = 0.6;         up( 4,2) = 1.31;    % Conductivity; wall
 % up( 5,1) = 0.1;         up( 5,2) = 0.2;    % Emissivity; roof
 % up( 6,1) = 0.8;         up( 6,2) = 0.9;    % Emissivity; wall
-up( 3,1) = 0.29;        up( 3,2) = 0.66;    % Absorptivity; wall
+up( 3,1) = 0.29;        up( 3,2) = 0.66;    % Absorptivity; roof
 up( 4,1) = 1-0.29;         up( 4,2) = 1+0.29;    % Ventilation rate 1
 up( 5,1) = 1-0.29;         up( 5,2) = 1+0.29;    % Ventilation rate 2
 
