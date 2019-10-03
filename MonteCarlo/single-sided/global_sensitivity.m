@@ -75,9 +75,9 @@ up( 5,1) = 1-0.29;         up( 5,2) = 1+0.29;    % Ventilation rate 2
 % avg of min, mean, max: 3.9487, 4.3925, 4.8275
 % min(min), max(max): 3.27, 5.94
 up( 6,1) = 3.27;        up( 6,2) = 5.94;    % Infiltration
-up( 7,1) = -1.0;        up( 7,2) = 1.0;    % Temperature std
-up( 8,1) = -1.0;        up( 8,2) = 1.0;    % Radiation std
-up( 9,1) = -1.0;        up( 9,2) = 1.0;    % Wind std 
+up( 7,1) = 0.0+eps;        up( 7,2) = 1.0-eps;    % Temperature quantile
+up( 8,1) = 0.0+eps;        up( 8,2) = 1.0-eps;    % Radiation quantile
+up( 9,1) = 0.0+eps;        up( 9,2) = 1.0-eps;    % Wind quantile
 
 
 

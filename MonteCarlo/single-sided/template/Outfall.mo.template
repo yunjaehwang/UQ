@@ -34,14 +34,14 @@ model Outfall
     y :=mu + sigma*sqrt(2)*Special.erfInv(2*u-1);
   end invNormal;
   
-  function invWeibull "Quantile of Weibull distribution"
+  function invGEV "Quantile of Weibull distribution"
     extends Modelica.Math.Distributions.Interfaces.partialQuantile;
-    input Real lambda(min=0) = 1
-      "Scale parameter of the Weibull distribution" annotation(Dialog);
-    input Real k(min=0) "Shape parameter of the Weibull distribution" annotation(Dialog);
+    input Real mu(min=0) = 1;
+    input Real sigma(min=0) = 1;
+    input Real k(min=0);
   algorithm
-    y := lambda * (-log( 1-u)) ^(1/k);
-  end invWeibull;
+    y := mu+sigma*((-log(u))^(-k)-1)/k ;
+  end invGEV;
   
   function invUniform "Quantile of uniform distribution"
     extends Modelica.Math.Distributions.Interfaces.partialQuantile;
@@ -154,7 +154,7 @@ model Outfall
     Placement(visible = true, transformation(origin = {-312, 92}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
   Modelica.Blocks.Math.MultiProduct multiProduct1(nu = 3) annotation(
     Placement(visible = true, transformation(origin = {-278, 90}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
-  Modelica.Blocks.Sources.CombiTimeTable Data_wind_speed(columns = 2:3,fileName = inputDataLoc, tableName = "WIND", tableOnFile = true, timeScale = 60) annotation(
+  Modelica.Blocks.Sources.CombiTimeTable Data_wind_speed(columns = 2:4,fileName = inputDataLoc, tableName = "WIND", tableOnFile = true, timeScale = 60) annotation(
     Placement(visible = true, transformation(origin = {-336, -108}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
   Modelica.Blocks.Math.Add Temperature_difference(k1 = +1, k2 = -1) annotation(
     Placement(visible = true, transformation(origin = {90, -76}, extent = {{-10, -10}, {10, 10}}, rotation = 90)));
@@ -196,8 +196,8 @@ model Outfall
     Placement(visible = true, transformation(origin = {-242, 90}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
 equation
   OutdoorTemperature = invNormal(qt_temperature, mu = Data_outdoor_temperature.y[1], sigma = Data_outdoor_temperature.y[2]);
-  SolarRadiation = invNormal(qt_radiation, mu = Data_solar_radiation.y[1], sigma = Data_solar_radiation.y[2]);
-  WindSpeed = invNormal(qt_wind, mu = Data_wind_speed.y[1], sigma = Data_wind_speed.y[2]);
+  SolarRadiation = invUniform(qt_radiation, y_min = Data_solar_radiation.y[1], y_max = Data_solar_radiation.y[2]);
+  WindSpeed = max(0.01,invGEV(qt_wind, mu = Data_wind_speed.y[1], sigma = Data_wind_speed.y[2], k=Data_wind_speed.y[3]));
   
 // Outdoor temperature blocks
   connect(OutdoorTemperature, multiProduct1.u[3]) annotation(
