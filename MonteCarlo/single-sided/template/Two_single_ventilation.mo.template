@@ -26,7 +26,7 @@ model Two_single_ventilation
     Placement(visible = true, transformation(origin = {50, 10}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
   Modelica.Blocks.Math.Product U_square annotation(
     Placement(visible = true, transformation(origin = {-90, 70}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
-  Modelica.Blocks.Interfaces.RealInput U annotation(
+  Modelica.Blocks.Interfaces.RealInput Port_wind annotation(
     Placement(visible = true, transformation(origin = {-140, 70}, extent = {{-20, -20}, {20, 20}}, rotation = 0), iconTransformation(origin = {-100, 60}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
   Modelica.Blocks.Math.Product product1 annotation(
     Placement(visible = true, transformation(origin = {-58, 84}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
@@ -129,9 +129,9 @@ equation
     Line(points = {{-78, 0}, {-64, 0}, {-64, 30}, {-52, 30}}, color = {0, 0, 127}));
   connect(Height_1.y, multiProduct1.u[2]) annotation(
     Line(points = {{-78, 30}, {-52, 30}}, color = {0, 0, 127}));
-  connect(U, U_square.u2) annotation(
+  connect(Port_wind, U_square.u2) annotation(
     Line(points = {{-140, 70}, {-114, 70}, {-114, 64}, {-102, 64}}, color = {0, 0, 127}));
-  connect(U, U_square.u1) annotation(
+  connect(Port_wind, U_square.u1) annotation(
     Line(points = {{-140, 70}, {-119, 70}, {-119, 76}, {-102, 76}}, color = {0, 0, 127}));
   connect(C1.y, product1.u1) annotation(
     Line(points = {{-79, 106}, {-78, 106}, {-78, 90}, {-70, 90}}, color = {0, 0, 127}));

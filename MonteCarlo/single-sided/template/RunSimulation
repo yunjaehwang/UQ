@@ -43,19 +43,19 @@ VAL_AREA_OPENING_2=$(awk 'NR==5{print $0}' UQ_input.in)
 # uncertain parameters
 VAL_CONVECTION_COEF_INNER=$(awk 'NR==6{print $0}' UQ_input.in) 
 VAL_CONVECTION_COEF_OUTER=$(awk 'NR==7{print $0}' UQ_input.in)
+VAL_REFLECTANCE_ROOF=$(awk 'NR==8{print $0}' UQ_input.in) 
 # VAL_CONDUCTIVITY_ROOF=$(awk 'NR==8{print $0}' UQ_input.in) 
 # VAL_CONDUCTIVITY_WALL=$(awk 'NR==9{print $0}' UQ_input.in) 
-# VAL_EMISSIVITY_ROOF=$(awk 'NR==10{print $0}' UQ_input.in) 
+VAL_EMISSIVITY_ROOF=$(awk 'NR==9{print $0}' UQ_input.in) 
 # VAL_EMISSIVITY_WALL=$(awk 'NR==11{print $0}' UQ_input.in) 
-VAL_REFLECTANCE_ROOF=$(awk 'NR==8{print $0}' UQ_input.in) 
-VAL_VENTILATION_RATE_1=$(awk 'NR==9{print $0}' UQ_input.in) 
-VAL_VENTILATION_RATE_2=$(awk 'NR==10{print $0}' UQ_input.in) 
-VAL_INFILTRATION=$(awk 'NR==11{print $0}' UQ_input.in) 
+VAL_VENTILATION_RATE_1=$(awk 'NR==10{print $0}' UQ_input.in) 
+VAL_VENTILATION_RATE_2=$(awk 'NR==11{print $0}' UQ_input.in) 
+VAL_INFILTRATION=$(awk 'NR==12{print $0}' UQ_input.in) 
 
 # add input factors (outdoor temperature, radiation, wind)
-VAL_QT_TEMPERATURE=$(awk 'NR==12{print $0}' UQ_input.in) 
-VAL_QT_RADIATION=$(awk 'NR==13{print $0}' UQ_input.in) 
-VAL_QT_WIND=$(awk 'NR==14{print $0}' UQ_input.in) 
+VAL_QT_TEMPERATURE=$(awk 'NR==13{print $0}' UQ_input.in) 
+VAL_QT_RADIATION=$(awk 'NR==14{print $0}' UQ_input.in) 
+VAL_QT_WIND=$(awk 'NR==15{print $0}' UQ_input.in) 
 
  
 # -------------------- substitution -------------------- #
@@ -78,7 +78,7 @@ sed -i "s/CONVECTION_COEF_OUTER/$VAL_CONVECTION_COEF_OUTER/g" $MAIN_MODEL
 # sed -i "s/CONDUCTIVITY_WALL/$VAL_CONDUCTIVITY_WALL/g" $MAIN_MODEL
 # sed -i "s/CONDUCTIVITY_ROOF/$VAL_CONDUCTIVITY_ROOF/g" $MAIN_MODEL
 # sed -i "s/EMISSIVITY_WALL/$VAL_EMISSIVITY_WALL/g" $MAIN_MODEL
-# sed -i "s/EMISSIVITY_ROOF/$VAL_EMISSIVITY_ROOF/g" $MAIN_MODEL
+sed -i "s/EMISSIVITY_ROOF/$VAL_EMISSIVITY_ROOF/g" $MAIN_MODEL
 sed -i "s/REFLECTANCE_ROOF/$VAL_REFLECTANCE_ROOF/g" $MAIN_MODEL
 sed -i "s/INFILTRATION/$VAL_INFILTRATION/g" $MAIN_MODEL
 

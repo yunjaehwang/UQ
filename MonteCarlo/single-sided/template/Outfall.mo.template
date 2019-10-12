@@ -11,11 +11,10 @@ model Outfall
   constant Real qt_temperature = QT_TEMPERATURE;
   constant Real qt_wind = QT_WIND;
   constant Real qt_radiation = QT_RADIATION;
-  
+  constant Real emissivity_roof = EMISSIVITY_ROOF;
   
 // Parameters for sensitivity study
-  constant Real emissivity_wall = 0.95;
-  constant Real emissivity_roof = 0.186;
+  constant Real emissivity_wall = 0.85;
   constant Real conductivity_wall = 0.95;
   constant Real conductivity_roof = 67;
   
@@ -34,14 +33,15 @@ model Outfall
     y :=mu + sigma*sqrt(2)*Special.erfInv(2*u-1);
   end invNormal;
   
-  function invGEV "Quantile of Weibull distribution"
+  
+  function invWeibull "Quantile of Weibull distribution"
     extends Modelica.Math.Distributions.Interfaces.partialQuantile;
-    input Real mu(min=0) = 1;
-    input Real sigma(min=0) = 1;
-    input Real k(min=0);
+    input Real lambda(min=0) = 1
+      "Scale parameter of the Weibull distribution" annotation(Dialog);
+    input Real k(min=0) "Shape parameter of the Weibull distribution" annotation(Dialog);
   algorithm
-    y := mu+sigma*((-log(u))^(-k)-1)/k ;
-  end invGEV;
+    y := lambda * (-log( 1-u)) ^(1/k);
+  end invWeibull;
   
   function invUniform "Quantile of uniform distribution"
     extends Modelica.Math.Distributions.Interfaces.partialQuantile;
@@ -70,13 +70,13 @@ model Outfall
     Placement(visible = true, transformation(origin = {-86, -46}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
   Modelica.Thermal.HeatTransfer.Components.ThermalConductor Conduction_wall4_inner(G = 23.73 * conductivity_wall) annotation(
     Placement(visible = true, transformation(origin = {-46, -46}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
-  Modelica.Thermal.HeatTransfer.Components.HeatCapacitor Capacitor_roof(C = 22427, T(fixed = true, start = 313.15)) annotation(
+  Modelica.Thermal.HeatTransfer.Components.HeatCapacitor Capacitor_roof(C = 22427, T(fixed = true, start = 303.15)) annotation(
     Placement(visible = true, transformation(origin = {-66, 112}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
-  Modelica.Thermal.HeatTransfer.Components.HeatCapacitor Capacitor_wall1(C = 1700 * 800 * 3.14 * 2.51 * 0.125, T(fixed = true, start = 301.15)) annotation(
+  Modelica.Thermal.HeatTransfer.Components.HeatCapacitor Capacitor_wall1(C = 1700 * 800 * 3.14 * 2.51 * 0.125, T(fixed = true, start = 296.15)) annotation(
     Placement(visible = true, transformation(origin = {-66, 54}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
-  Modelica.Thermal.HeatTransfer.Components.HeatCapacitor Capacitor_wall3(C = 1700 * 800 * 3.14 * 2.33 * 0.125, T(fixed = true, start = 301.15)) annotation(
+  Modelica.Thermal.HeatTransfer.Components.HeatCapacitor Capacitor_wall3(C = 1700 * 800 * 3.14 * 2.33 * 0.125, T(fixed = true, start = 296.15)) annotation(
     Placement(visible = true, transformation(origin = {-66, 4}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
-  Modelica.Thermal.HeatTransfer.Components.HeatCapacitor Capacitor_wall4(C = 1700 * 800 * 2.43 * 2.33 * 0.125, T(fixed = true, start = 301.15)) annotation(
+  Modelica.Thermal.HeatTransfer.Components.HeatCapacitor Capacitor_wall4(C = 1700 * 800 * 2.43 * 2.33 * 0.125, T(fixed = true, start = 296.15)) annotation(
     Placement(visible = true, transformation(origin = {-66, -36}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
   Modelica.Thermal.HeatTransfer.Components.Convection Convection_roof_inner annotation(
     Placement(visible = true, transformation(origin = {-6, 120}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
@@ -102,7 +102,7 @@ model Outfall
     Placement(visible = true, transformation(origin = {-126, -14}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
   Modelica.Thermal.HeatTransfer.Components.BodyRadiation Radiation_wall4_outer(Gr = 5.650 * emissivity_wall) annotation(
     Placement(visible = true, transformation(origin = {-124, -72}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
-  Modelica.Thermal.HeatTransfer.Components.HeatCapacitor Capacitor_indoor_air(C = 21841, T(fixed = true, start = 301.15)) annotation(
+  Modelica.Thermal.HeatTransfer.Components.HeatCapacitor Capacitor_indoor_air(C = 21841, T(fixed = true, start = 298.5)) annotation(
     Placement(visible = true, transformation(origin = {114, 112}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
   Modelica.Thermal.HeatTransfer.Components.ThermalCollector thermalCollector1(m = 12) annotation(
     Placement(visible = true, transformation(origin = {92, 88}, extent = {{-10, -10}, {10, 10}}, rotation = 90)));
@@ -154,7 +154,7 @@ model Outfall
     Placement(visible = true, transformation(origin = {-312, 92}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
   Modelica.Blocks.Math.MultiProduct multiProduct1(nu = 3) annotation(
     Placement(visible = true, transformation(origin = {-278, 90}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
-  Modelica.Blocks.Sources.CombiTimeTable Data_wind_speed(columns = 2:4,fileName = inputDataLoc, tableName = "WIND", tableOnFile = true, timeScale = 60) annotation(
+  Modelica.Blocks.Sources.CombiTimeTable Data_wind_speed(columns = 2:3,fileName = inputDataLoc, tableName = "WIND", tableOnFile = true, timeScale = 60) annotation(
     Placement(visible = true, transformation(origin = {-336, -108}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
   Modelica.Blocks.Math.Add Temperature_difference(k1 = +1, k2 = -1) annotation(
     Placement(visible = true, transformation(origin = {90, -76}, extent = {{-10, -10}, {10, 10}}, rotation = 90)));
@@ -162,9 +162,9 @@ model Outfall
     Placement(visible = true, transformation(origin = {62, -36}, extent = {{-10, -10}, {10, 10}}, rotation = 90)));
   Modelica.Thermal.HeatTransfer.Components.BodyRadiation Radiation_roof_to_floor(Gr = 7.22 * 0.85) annotation(
     Placement(visible = true, transformation(origin = {32, 134}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
-  Modelica.Blocks.Sources.Constant Convection_A(k = 3.64 * convection_coef_outer) annotation(
+  Modelica.Blocks.Sources.Constant Convection_A(k = 4.4 * convection_coef_outer) annotation(
     Placement(visible = true, transformation(origin = {-220, -180}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
-  Modelica.Blocks.Sources.Constant Convection_B(k = 0.84) annotation(
+  Modelica.Blocks.Sources.Constant Convection_B(k = 0.78) annotation(
     Placement(visible = true, transformation(origin = {-286, -168}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
   Modelica.Blocks.Math.Exp exp1 annotation(
     Placement(visible = true, transformation(origin = {-220, -152}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
@@ -197,7 +197,7 @@ model Outfall
 equation
   OutdoorTemperature = invNormal(qt_temperature, mu = Data_outdoor_temperature.y[1], sigma = Data_outdoor_temperature.y[2]);
   SolarRadiation = invUniform(qt_radiation, y_min = Data_solar_radiation.y[1], y_max = Data_solar_radiation.y[2]);
-  WindSpeed = max(0.01,invGEV(qt_wind, mu = Data_wind_speed.y[1], sigma = Data_wind_speed.y[2], k=Data_wind_speed.y[3]));
+  WindSpeed = max(0.01,invWeibull(qt_wind, lambda = Data_wind_speed.y[1], k = Data_wind_speed.y[2]));
   
 // Outdoor temperature blocks
   connect(OutdoorTemperature, multiProduct1.u[3]) annotation(
@@ -216,7 +216,7 @@ equation
     Line(points = {{-270, 164}, {-254, 164}, {-254, 158}, {-244, 158}, {-244, 158}}, color = {0, 0, 127}));
   
 // wind speed blocks
-  connect(WindSpeed, two_single_ventilation1.U) annotation(
+  connect(WindSpeed, two_single_ventilation1.Port_wind) annotation(
     Line(points = {{-297, -108}, {-168, -108}, {-168, -142}, {56, -142}, {56, -46}}, color = {0, 0, 127}));
   connect(WindSpeed, log1.u) annotation(
     Line(points = {{-297, -108}, {-306, -108}, {-306, -142}, {-296, -142}}, color = {0, 0, 127}));
@@ -390,6 +390,6 @@ equation
     Line(points = {{-66, 102}, {-62.5, 102}, {-62.5, 102}, {-61, 102}, {-61, 102}, {-56, 102}, {-56, 102}, {-56, 102}, {-56, 102}, {-46, 102}, {-46, 102}, {-56, 102}}, color = {191, 0, 0}));
   annotation(
     uses(Modelica(version = "3.2.2")),
-    experiment(StartTime = 0, StopTime = 86400, Tolerance = 1e-6, Interval = 173.494),
+    experiment(StartTime = 0, StopTime = 129600, Tolerance = 1e-6, Interval = 120.00),
     __OpenModelica_simulationFlags(lv = "LOG_STATS", s = "dassl"));
 end Outfall;

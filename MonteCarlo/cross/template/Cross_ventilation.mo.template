@@ -1,0 +1,124 @@
+model Cross_ventilation
+  // fixed parameters
+  constant Real area_opening_1 = AREA_OPENING_1;
+  constant Real area_opening_2 = AREA_OPENING_2;
+  constant Real discharge_coef_1 = 0.61;
+  constant Real discharge_coef_2 = 0.61;
+//  constant Real discharge_coef_1 = DISCHARGE_COEF_1;
+//  constant Real discharge_coef_2 = DISCHARGE_COEF_2;
+  constant Real height_difference = HEIGHT_DIFFERENCE;
+  constant Real cp_difference = CP_DIFFERENCE;
+  
+  // uncertain parameters
+  constant Real ventilation_rate_1 = VENTILATION_RATE_1;
+  
+  
+  // functions
+  function effectiveArea "Effective area for cross ventilation model"
+    input Real A1 = 1 "Area 1";
+    input Real A2 = 1 "Area 2";
+    input Real Cd1 = 0.61 "Discharge coefficient 1";
+    input Real Cd2 = 0.61 "Discharge coefficient 2";
+    output Real y;
+  algorithm
+    y := A1*A2 / sqrt( (Cd1 * A1^2 + Cd2 * A2^2) / (2*Cd1*Cd2));
+  end effectiveArea;
+
+
+  Real A_eff;
+  // original model blocks
+  Modelica.Thermal.HeatTransfer.Interfaces.HeatPort_b Port_indoor annotation(
+    Placement(visible = true, transformation(origin = {138, -18}, extent = {{-10, -10}, {10, 10}}, rotation = 0), iconTransformation(origin = {102, 2}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+  Modelica.Blocks.Math.MultiProduct multiProduct1(nu = 3) annotation(
+    Placement(visible = true, transformation(origin = {6, -34}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+  Modelica.Blocks.Sources.Constant g(k = 9.81) annotation(
+    Placement(visible = true, transformation(origin = {-40, -36}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+  Modelica.Blocks.Math.Division division1 annotation(
+    Placement(visible = true, transformation(origin = {-66, -34}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+  Modelica.Blocks.Math.Add add1(k1 = +1, k2 = -1) annotation(
+    Placement(visible = true, transformation(origin = {-90, -82}, extent = {{-10, -10}, {10, 10}}, rotation = 90)));
+  Modelica.Thermal.HeatTransfer.Sensors.TemperatureSensor temperatureSensor2 annotation(
+    Placement(visible = true, transformation(origin = {28, -110}, extent = {{10, -10}, {-10, 10}}, rotation = 0)));
+  Modelica.Blocks.Sources.Constant Height_difference(k = height_difference) annotation(
+    Placement(visible = true, transformation(origin = {-40, -64}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+  Modelica.Blocks.Math.MultiProduct multiProduct2(nu = 3) annotation(
+    Placement(visible = true, transformation(origin = {90, 4}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+  Modelica.Thermal.HeatTransfer.Sources.PrescribedHeatFlow prescribedHeatFlow1 annotation(
+    Placement(visible = true, transformation(origin = {122, 30}, extent = {{-10, -10}, {10, 10}}, rotation = -90)));
+  Modelica.Blocks.Math.Abs abs1 annotation(
+    Placement(visible = true, transformation(origin = {-40, -4}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+  Modelica.Blocks.Interfaces.RealInput Port_wind annotation(
+    Placement(visible = true, transformation(origin = {-120, 60}, extent = {{-20, -20}, {20, 20}}, rotation = 0), iconTransformation(origin = {-100, 60}, extent = {{-20, -20}, {20, 20}}, rotation = 0)));
+  Modelica.Blocks.Interfaces.RealInput Port_outdoor annotation(
+    Placement(visible = true, transformation(origin = {-120, -40}, extent = {{-20, -20}, {20, 20}}, rotation = 0), iconTransformation(origin = {-100, -60}, extent = {{-20, -20}, {20, 20}}, rotation = 0)));
+  Modelica.Blocks.Sources.Constant Delta_cp(k = 0.5 * cp_difference) annotation(
+    Placement(visible = true, transformation(origin = {-70, 90}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+  Modelica.Blocks.Math.Add add2 annotation(
+    Placement(visible = true, transformation(origin = {10, 32}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+  Modelica.Blocks.Math.Product WS_squared annotation(
+    Placement(visible = true, transformation(origin = {-70, 50}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+  Modelica.Blocks.Math.Product product1 annotation(
+    Placement(visible = true, transformation(origin = {-30, 56}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+  Modelica.Blocks.Sources.Constant Ventilation_param(k = 1005 * 1.225) annotation(
+    Placement(visible = true, transformation(origin = {28, 76}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+  Modelica.Blocks.Math.Sqrt sqrt1 annotation(
+    Placement(visible = true, transformation(origin = {52, 18}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+  Modelica.Blocks.Math.Product Ventilation_rate annotation(
+    Placement(visible = true, transformation(origin = {86, -38}, extent = {{-10, -10}, {10, 10}}, rotation = 90)));
+equation
+  A_eff = effectiveArea(A1=area_opening_1,A2=area_opening_2,Cd1=discharge_coef_1,Cd2=discharge_coef_2);
+  connect(sqrt1.y, Ventilation_rate.u1) annotation(
+    Line(points = {{63, 18}, {68.5, 18}, {68.5, -50}, {80, -50}}, color = {0, 0, 127}));
+  connect(Ventilation_rate.y, multiProduct2.u[1]) annotation(
+    Line(points = {{86, -27}, {86, -18.5}, {80, -18.5}, {80, 4}}, color = {0, 0, 127}));
+  connect(A_eff, Ventilation_rate.u2) annotation(
+    Line(points = {{66, -76}, {66, -69}, {92, -69}, {92, -50}}, color = {0, 0, 127}));
+  connect(multiProduct1.y, add2.u2) annotation(
+    Line(points = {{18, -34}, {30, -34}, {30, 6}, {-14, 6}, {-14, 26}, {-2, 26}, {-2, 26}}, color = {0, 0, 127}));
+  connect(add2.y, sqrt1.u) annotation(
+    Line(points = {{22, 32}, {26, 32}, {26, 20}, {40, 20}, {40, 18}}, color = {0, 0, 127}));
+  connect(g.y, multiProduct1.u[1]) annotation(
+    Line(points = {{-29, -36}, {-16.5, -36}, {-16.5, -34}, {-4, -34}}, color = {0, 0, 127}));
+  connect(Height_difference.y, multiProduct1.u[2]) annotation(
+    Line(points = {{-29, -64}, {-10.5, -64}, {-10.5, -34}, {-4, -34}}, color = {0, 0, 127}));
+  connect(abs1.y, multiProduct1.u[3]) annotation(
+    Line(points = {{-29, -4}, {-26, -4}, {-26, -34}, {-4, -34}}, color = {0, 0, 127}));
+  connect(Port_outdoor, add1.u1) annotation(
+    Line(points = {{-120, -40}, {-96, -40}, {-96, -94}}, color = {0, 0, 127}));
+  connect(add1.y, multiProduct2.u[2]) annotation(
+    Line(points = {{-90, -71}, {-90, 4}, {80, 4}}, color = {0, 0, 127}));
+  connect(add1.u2, temperatureSensor2.T) annotation(
+    Line(points = {{-84, -94}, {-12, -94}, {-12, -110}, {18, -110}}, color = {0, 0, 127}));
+  connect(add1.y, division1.u1) annotation(
+    Line(points = {{-90, -71}, {-86.5, -71}, {-86.5, -28}, {-78, -28}}, color = {0, 0, 127}));
+  connect(division1.y, abs1.u) annotation(
+    Line(points = {{-55, -34}, {-54.5, -34}, {-54.5, -4}, {-52, -4}}, color = {0, 0, 127}));
+  connect(Port_outdoor, division1.u2) annotation(
+    Line(points = {{-120, -40}, {-78, -40}, {-78, -40}, {-78, -40}}, color = {0, 0, 127}));
+  connect(product1.y, add2.u1) annotation(
+    Line(points = {{-19, 56}, {-11.5, 56}, {-11.5, 38}, {-2, 38}}, color = {0, 0, 127}));
+  connect(multiProduct2.y, prescribedHeatFlow1.Q_flow) annotation(
+    Line(points = {{102, 4}, {107, 4}, {107, 40}, {122, 40}}, color = {0, 0, 127}));
+  connect(prescribedHeatFlow1.port, Port_indoor) annotation(
+    Line(points = {{122, 20}, {122, 15}, {138, 15}, {138, -18}}, color = {191, 0, 0}));
+  connect(Delta_cp.y, product1.u1) annotation(
+    Line(points = {{-58, 90}, {-42, 90}, {-42, 62}}, color = {0, 0, 127}));
+  connect(WS_squared.y, product1.u2) annotation(
+    Line(points = {{-59, 50}, {-42, 50}}, color = {0, 0, 127}));
+  connect(Ventilation_param.y, multiProduct2.u[3]) annotation(
+    Line(points = {{39, 76}, {48, 76}, {48, 66}, {80, 66}, {80, 4}}, color = {0, 0, 127}));
+  connect(Port_wind, WS_squared.u2) annotation(
+    Line(points = {{-120, 60}, {-94, 60}, {-94, 44}, {-82, 44}, {-82, 44}}, color = {0, 0, 127}));
+  connect(Port_wind, WS_squared.u1) annotation(
+    Line(points = {{-120, 60}, {-90, 60}, {-90, 56}, {-82, 56}, {-82, 56}}, color = {0, 0, 127}));
+  connect(temperatureSensor2.port, Port_indoor) annotation(
+    Line(points = {{38, -110}, {138, -110}, {138, -18}}, color = {191, 0, 0}));
+  connect(Port_outdoor, add1.u1) annotation(
+    Line(points = {{-170, -66}, {-134, -66}, {-134, 16}, {-108, 16}}, color = {0, 0, 127}));
+  connect(Port_outdoor, division1.u2) annotation(
+    Line(points = {{-170, -66}, {-103, -66}, {-103, 44}, {-82, 44}}, color = {0, 0, 127}));
+  annotation(
+    uses(Modelica(version = "3.2.2")),
+    Icon(graphics = {Text(origin = {7, 34}, extent = {{-81, -26}, {65, 6}}, textString = "Cross"), Text(origin = {3, -22}, extent = {{-81, -26}, {81, 26}}, textString = "Ventilation")}, coordinateSystem(initialScale = 0.1)),
+    experiment(StartTime = 0, StopTime = 86400, Tolerance = 1e-06, Interval = 173.146));
+end Cross_ventilation;

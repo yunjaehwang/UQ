@@ -1,0 +1,103 @@
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+#define _OMC_LIT0_data "'p"
+static const MMC_DEFSTRINGLIT(_OMC_LIT_STRUCT0,2,_OMC_LIT0_data);
+#define _OMC_LIT0 MMC_REFSTRINGLIT(_OMC_LIT_STRUCT0)
+#define _OMC_LIT1_data "'p/s"
+static const MMC_DEFSTRINGLIT(_OMC_LIT_STRUCT1,4,_OMC_LIT1_data);
+#define _OMC_LIT1 MMC_REFSTRINGLIT(_OMC_LIT_STRUCT1)
+#define _OMC_LIT2_data "1"
+static const MMC_DEFSTRINGLIT(_OMC_LIT_STRUCT2,1,_OMC_LIT2_data);
+#define _OMC_LIT2 MMC_REFSTRINGLIT(_OMC_LIT_STRUCT2)
+#define _OMC_LIT3_data "'p(1/2)"
+static const MMC_DEFSTRINGLIT(_OMC_LIT_STRUCT3,7,_OMC_LIT3_data);
+#define _OMC_LIT3 MMC_REFSTRINGLIT(_OMC_LIT_STRUCT3)
+#define _OMC_LIT4_data "Time"
+static const MMC_DEFSTRINGLIT(_OMC_LIT_STRUCT4,4,_OMC_LIT4_data);
+#define _OMC_LIT4 MMC_REFSTRINGLIT(_OMC_LIT_STRUCT4)
+#define _OMC_LIT5_data "s"
+static const MMC_DEFSTRINGLIT(_OMC_LIT_STRUCT5,1,_OMC_LIT5_data);
+#define _OMC_LIT5 MMC_REFSTRINGLIT(_OMC_LIT_STRUCT5)
+static _index_t _OMC_LIT6_dims[1] = {8};
+static const modelica_real _OMC_LIT6_data[] = {-0.0005087819496582806, -0.008368748197417368, 0.03348066254097446, -0.0126926147662974, -0.03656379714117627, 0.02198786811111689, 0.008226878746769157, -0.005387729650712429};
+static real_array const _OMC_LIT6 = {
+  1, _OMC_LIT6_dims, (void*) _OMC_LIT6_data
+};
+static _index_t _OMC_LIT7_dims[1] = {10};
+static const modelica_real _OMC_LIT7_data[] = {1.0, -0.9700050433032906, -1.565745582341759, 1.56221558398423, 0.662328840472003, -0.7122890234154284, -0.05273963823400997, 0.07952836873415717, -0.0023339375937419, 0.0008862163904564247};
+static real_array const _OMC_LIT7 = {
+  1, _OMC_LIT7_dims, (void*) _OMC_LIT7_data
+};
+static _index_t _OMC_LIT8_dims[1] = {9};
+static const modelica_real _OMC_LIT8_data[] = {-0.2024335083559388, 0.1052646806993917, 8.3705032834312, 17.6447298408374, -18.85106480587142, -44.6382324441787, 17.44538598557087, 21.12946554483405, -3.671922547077294};
+static real_array const _OMC_LIT8 = {
+  1, _OMC_LIT8_dims, (void*) _OMC_LIT8_data
+};
+static _index_t _OMC_LIT9_dims[1] = {9};
+static const modelica_real _OMC_LIT9_data[] = {1.0, 6.242641248542475, 3.971343795334387, -28.66081804998, -20.14326346804852, 48.56092131087399, 10.82686673554602, -22.64369334131397, 1.721147657612003};
+static real_array const _OMC_LIT9 = {
+  1, _OMC_LIT9_dims, (void*) _OMC_LIT9_data
+};
+static _index_t _OMC_LIT10_dims[1] = {11};
+static const modelica_real _OMC_LIT10_data[] = {-0.1311027816799519, -0.1637940471933171, 0.1170301563419952, 0.3870797389726043, 0.3377855389120359, 0.1428695344081572, 0.02901579100053291, 0.002145589953888053, -6.794655751811263e-07, 2.85225331782217e-08, -6.81149956853777e-10};
+static real_array const _OMC_LIT10 = {
+  1, _OMC_LIT10_dims, (void*) _OMC_LIT10_data
+};
+static _index_t _OMC_LIT11_dims[1] = {8};
+static const modelica_real _OMC_LIT11_data[] = {1.0, 3.466254072425672, 5.381683457070069, 4.778465929458438, 2.593019216236203, 0.848854343457902, 0.1522643382953318, 0.01105924229346489};
+static real_array const _OMC_LIT11 = {
+  1, _OMC_LIT11_dims, (void*) _OMC_LIT11_data
+};
+static _index_t _OMC_LIT12_dims[1] = {9};
+static const modelica_real _OMC_LIT12_data[] = {-0.0350353787183178, -0.002224265292134479, 0.01855733065142311, 0.009508047013259196, 0.001871234928195592, 0.0001575446174249605, 4.60469890584318e-06, -2.304047769118826e-10, 2.66339227425782e-12};
+static real_array const _OMC_LIT12 = {
+  1, _OMC_LIT12_dims, (void*) _OMC_LIT12_data
+};
+static _index_t _OMC_LIT13_dims[1] = {7};
+static const modelica_real _OMC_LIT13_data[] = {1.0, 1.365334981755406, 0.7620591645536234, 0.2200911057641312, 0.03415891436709477, 0.00263861676657016, 7.646752923027944e-05};
+static real_array const _OMC_LIT13 = {
+  1, _OMC_LIT13_dims, (void*) _OMC_LIT13_data
+};
+static _index_t _OMC_LIT14_dims[1] = {9};
+static const modelica_real _OMC_LIT14_data[] = {-0.01674310050766337, -0.001129514387455803, 0.001056288621524929, 0.0002093863174875881, 1.496247837583424e-05, 4.496967899277064e-07, 4.625961635228786e-09, -2.811287356288318e-14, 9.905570997331033e-17};
+static real_array const _OMC_LIT14 = {
+  1, _OMC_LIT14_dims, (void*) _OMC_LIT14_data
+};
+static _index_t _OMC_LIT15_dims[1] = {7};
+static const modelica_real _OMC_LIT15_data[] = {1.0, 0.5914293448864175, 0.1381518657490833, 0.01607460870936765, 0.0009640118070051656, 2.75335474764726e-05, 2.82243172016108e-07};
+static real_array const _OMC_LIT15 = {
+  1, _OMC_LIT15_dims, (void*) _OMC_LIT15_data
+};
+static _index_t _OMC_LIT16_dims[1] = {8};
+static const modelica_real _OMC_LIT16_data[] = {-0.002497821279189813, -7.79190719229054e-06, 2.547230374130275e-05, 1.623977773425109e-06, 3.963410113048012e-08, 4.116328311909442e-10, 1.45596286718675e-12, -1.167650123971843e-18};
+static real_array const _OMC_LIT16 = {
+  1, _OMC_LIT16_dims, (void*) _OMC_LIT16_data
+};
+static _index_t _OMC_LIT17_dims[1] = {7};
+static const modelica_real _OMC_LIT17_data[] = {1.0, 0.2071231122144225, 0.01694108381209759, 0.0006905382656226846, 1.450073598182326e-05, 1.444377566281441e-07, 5.097612765997785e-10};
+static real_array const _OMC_LIT17 = {
+  1, _OMC_LIT17_dims, (void*) _OMC_LIT17_data
+};
+static _index_t _OMC_LIT18_dims[1] = {8};
+static const modelica_real _OMC_LIT18_data[] = {-0.0005390429110190785, -2.839875900472772e-07, 8.994651148922914e-07, 2.293458592659209e-08, 2.255614448635001e-10, 9.478466275030226e-13, 1.358801301089249e-15, -3.488903933999489e-22};
+static real_array const _OMC_LIT18 = {
+  1, _OMC_LIT18_dims, (void*) _OMC_LIT18_data
+};
+static _index_t _OMC_LIT19_dims[1] = {7};
+static const modelica_real _OMC_LIT19_data[] = {1.0, 0.08457462340018994, 0.002820929847262647, 4.682929219408942e-05, 3.999688121938621e-07, 1.618092908879045e-09, 2.315586083102596e-12};
+static real_array const _OMC_LIT19 = {
+  1, _OMC_LIT19_dims, (void*) _OMC_LIT19_data
+};
+#define _OMC_LIT20_data "NoName"
+static const MMC_DEFSTRINGLIT(_OMC_LIT_STRUCT20,6,_OMC_LIT20_data);
+#define _OMC_LIT20 MMC_REFSTRINGLIT(_OMC_LIT_STRUCT20)
+static _index_t _OMC_LIT21_dims[2] = {0, 2};
+static base_array_t const _OMC_LIT21 = {
+  2, _OMC_LIT21_dims, (void*) 0
+};
+
+#ifdef __cplusplus
+}
+#endif

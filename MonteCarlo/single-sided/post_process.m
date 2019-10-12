@@ -1,14 +1,16 @@
 %% pre-process
 % read output files and filter
 clear;  clc;
-cd('/home/yunjaeh/github/UQ/MonteCarlo/single-sided/data');
-mkdir ./output
-num_param   = 9;        % # of uncertain parameters
-num_iter    = 50;       % # of total number of iteration
+cd('/home/yunjaeh/github/UQ/MonteCarlo/single-sided/data_sfv_0210/');
+% add temperature measurements and compare it to the prediction result
+load('/home/yunjaeh/github/Bangladesh_measurement/TemperatureWind/Data/MeasurementDataTable.mat');
+
+num_param   = 10;        % # of uncertain parameters
+num_iter    = 20;       % # of total number of iteration
 num_sample  = 100;      % # of samples in each iteration
 
 data_input=[];
-len_time = 3377;
+len_time = 5400;
 
 data.temp_out = zeros(num_sample*num_iter, len_time);
 data.rad = zeros(num_sample*num_iter, len_time);
@@ -37,9 +39,9 @@ for iter = 1:num_iter
         idx = num_sample * (iter-1) + i
 %         f_out_raw = ['./output_',num2str(iter),'/result_',num2str(i),'.csv'];
 
-         
+        
         data_temp = dlmread([fname,'.csv'],' ',1,0);    
-
+        if(size(data_temp,1) ==len_time)
         data.temp_out(idx,:) = data_temp(:,1)';
         data.rad(idx,:) = data_temp(:,2)';
         data.wind(idx,:) = data_temp(:,3)';
@@ -51,6 +53,10 @@ for iter = 1:num_iter
         data.roof_in(idx,:) = data_temp(:,9)';
         data.roof_out(idx,:) = data_temp(:,10)';
         data.vent_rate(idx,: ) = data_temp(:,11)';
+        else
+            display('Skip');
+        end
+        
 
     end
 end
@@ -65,17 +71,25 @@ for i=1:num_param
 end
 
 
+idx_diverged = find(data.wind(:,1) ==0);
+if(~isempty(idx_diverged))
+    fn = fieldnames(data);
+    for i=1:numel(fn)
+        data.(fn{i}) = data.(fn{i})(1:num_iter*num_sample ~= idx_diverged,:);
+    end
+
+end
 
 %% plot input and outputs
-load('/home/yunjaeh/github/UQ/MonteCarlo/single-sided/integral_time_stamp.mat');     % load time stamp
-
+% load('/home/yunjaeh/github/UQ/MonteCarlo/single-sided/integral_time_stamp.mat');     % load time stamp
+load('/home/yunjaeh/github/UQ/MonteCarlo/single-sided/time_stamp3.mat');     % load time stamp
 
 vol_house = 17.72;
 % ach_in = 4.75;
 ach = data.vent_rate*3600/vol_house;
 
 for i=1:size(data.vent_rate,1)
-    ach(i,:) = ach(i,:) + data.input(i,6);
+    ach(i,:) = ach(i,:) + data.input(i,7);
 end
 
 figure();
@@ -84,28 +98,41 @@ figure();
 % outdoor temperature
 subplot(2,3,1); hold on
 plot(t_stamp, mean(data.temp_out)-273.15,'k','linewidth',1.5);
-plot(t_stamp, mean(data.temp_in)-273.15,'b','linewidth',1.5);
+% plot(t_stamp, mean(data.temp_in)-273.15,'b','linewidth',1.5);
 patch([t_stamp' fliplr(t_stamp')], [max(data.temp_out) fliplr(min(data.temp_out))]-273.15,[0.8 0.8 0.8],...
     'edgecolor','none','facealpha',0.5);
-patch([t_stamp' fliplr(t_stamp')], [max(data.temp_in) fliplr(min(data.temp_in))]-273.15,[0.8 0.8 1.0],...
-    'edgecolor','none','facealpha',0.5);
+% patch([t_stamp' fliplr(t_stamp')], [max(data.temp_in) fliplr(min(data.temp_in))]-273.15,[0.8 0.8 1.0],...
+%     'edgecolor','none','facealpha',0.5);
 
 legend('Outdoor temperature','Indoor temperature');
-xlim([0 24]);
+xlim([12 36]);      xlabel('Time');
 ylabel('Temperature [^\circC]');
+xticks([12 24 36]);
+xticklabels({'Noon','Midnight','Noon'});
+
 
 % solar radiation
 subplot(2,3,2); hold on
 patch([t_stamp' fliplr(t_stamp')], [max(data.rad) fliplr(min(data.rad))],[0.8 0.8 0.8],'edgecolor','none');
 plot(t_stamp, mean(data.rad),'k','linewidth',1.5);
-xlim([0 24]);
+
+xlim([12 36]);      xlabel('Time');
+ylabel('Temperature [^\circC]');
+xticks([12 24 36]);
+xticklabels({'Noon','Midnight','Noon'});
+
 ylabel('Solar radiation [W]');
 
 % wind speed
 subplot(2,3,3); hold on
 patch([t_stamp' fliplr(t_stamp')], [max(data.wind) fliplr(min(data.wind))],[0.8 0.8 0.8],'edgecolor','none');
 plot(t_stamp, mean(data.wind),'k','linewidth',1.5);
-xlim([0 24]);
+plot(t_stamp, mean(data.wind)+std(data.wind),'k:','linewidth',1.5);
+plot(t_stamp, mean(data.wind)-std(data.wind),'k:','linewidth',1.5);
+
+xlim([12 36]);      xlabel('Time');
+xticks([12 24 36]);
+xticklabels({'Noon','Midnight','Noon'});
 ylabel('Wind speed [m/s]');
 
 
@@ -119,8 +146,13 @@ patch([t_stamp' fliplr(t_stamp')], [max(data.wall_out) fliplr(min(data.wall_out)
     'edgecolor','none','facealpha',0.5);
 patch([t_stamp' fliplr(t_stamp')], [max(data.wall_in) fliplr(min(data.wall_in))]-273.15,[1.0 0.8 0.8],...
     'edgecolor','none','facealpha',0.5);
-xlim([0 24]);
+
+xlim([12 36]);      xlabel('Time');
 ylabel('Temperature [^\circC]');
+xticks([12 24 36]);
+xticklabels({'Noon','Midnight','Noon'});
+
+
 legend('Outer wall surface','Inner wall surface');
 
 % roof surface temperature
@@ -131,7 +163,10 @@ patch([t_stamp' fliplr(t_stamp')], [max(data.roof_out) fliplr(min(data.roof_out)
     'edgecolor','none','facealpha',0.5);
 patch([t_stamp' fliplr(t_stamp')], [max(data.roof_in) fliplr(min(data.roof_in))]-273.15,[1.0 0.8 0.8],...
     'edgecolor','none','facealpha',0.5);
-xlim([0 24]);
+
+xlim([12 36]);      xlabel('Time');
+xticks([12 24 36]);
+xticklabels({'Noon','Midnight','Noon'});
 ylabel('Temperature [^\circC]');
 legend('Outer roof surface','Inner roof surface');
 
@@ -140,172 +175,272 @@ legend('Outer roof surface','Inner roof surface');
 subplot(2,3,6); hold on
 patch([t_stamp' fliplr(t_stamp')], [max(ach) fliplr(min(ach))],[0.8 0.8 0.8],...
     'edgecolor','none','facealpha',0.8);
+plot(t_stamp, mean(ach)+std(ach),'k:','linewidth',1.5);
 plot(t_stamp, mean(ach),'k','linewidth',1.5);
-xlim([0 24]);
-ylim([0 20]);
+plot(t_stamp, mean(ach)-std(ach),'k:','linewidth',1.5);
+
+xlim([12 36]);      xlabel('Time');
+xticks([12 24 36]);
+xticklabels({'Noon','Midnight','Noon'});
+% ylim([0 20]);
 ylabel('ACH [1/h]');
 
 
 
 
-%% add temperature measurements and compare it to the prediction result
-load('/home/yunjaeh/github/Bangladesh_measurement/TemperatureWind/Data/MeasurementDataCalibrated.mat');
 
 %% indoor air temperature
-targetDate = datetime(2019,2,5,12,0,0);
-timeIdx.CT = (targetDate-day(1)) <= hourly.CT.time & hourly.CT.time <= targetDate ; 
-timeIdx.NE = (targetDate-day(1)) <= hourly.NE.time & hourly.NE.time <= targetDate ; 
-timeIdx.NW = (targetDate-day(1)) <= hourly.NW.time & hourly.NW.time <= targetDate ; 
-timeIdx.SE = (targetDate-day(1)) <= hourly.SE.time & hourly.SE.time <= targetDate ; 
-timeIdx.SW = (targetDate-day(1)) <= hourly.SW.time & hourly.SW.time <= targetDate ; 
+targetDate = datetime(2019,2,10,12,0,0);
+timeIdx = (targetDate-hours(36)) <= hourly.Time & hourly.Time <= targetDate ; 
+
 
 figure();
 subplot(1,2,1);
 hold on
 % measurement
-plot(0:24, hourly.CT.top.mean(timeIdx.CT), 'b'); 
-plot(0:24, hourly.NE.top.mean(timeIdx.NE), 'b'); 
-plot(0:24, hourly.NW.top.mean(timeIdx.NW), 'b'); 
-plot(0:24, hourly.SE.top.mean(timeIdx.SE), 'b'); 
-plot(0:24, hourly.SW.top.mean(timeIdx.SW), 'b'); 
+plot(0:36, hourly.mean.CT_low(timeIdx), 'b'); 
+plot(0:36, hourly.mean.NE_low(timeIdx), 'b'); 
+plot(0:36, hourly.mean.NW_low(timeIdx), 'b'); 
+plot(0:36, hourly.mean.SE_low(timeIdx), 'b'); 
+plot(0:36, hourly.mean.SW_low(timeIdx), 'b'); 
 
-plot(0:24, hourly.CT.mid.mean(timeIdx.CT), 'k'); 
-plot(0:24, hourly.NE.mid.mean(timeIdx.NE), 'k'); 
-plot(0:24, hourly.NW.mid.mean(timeIdx.NW), 'k'); 
-plot(0:24, hourly.SE.mid.mean(timeIdx.SE), 'k'); 
-plot(0:24, hourly.SW.mid.mean(timeIdx.SW), 'k'); 
+plot(0:36, hourly.mean.CT_mid(timeIdx), 'k'); 
+plot(0:36, hourly.mean.NE_mid(timeIdx), 'k'); 
+plot(0:36, hourly.mean.NW_mid(timeIdx), 'k'); 
+plot(0:36, hourly.mean.SE_mid(timeIdx), 'k'); 
+plot(0:36, hourly.mean.SW_mid(timeIdx), 'k'); 
 
-plot(0:24, hourly.CT.low.mean(timeIdx.CT), 'r');
-plot(0:24, hourly.NE.low.mean(timeIdx.NE), 'r');
-plot(0:24, hourly.NW.low.mean(timeIdx.NW), 'r');
-plot(0:24, hourly.SE.low.mean(timeIdx.SE), 'r');
-plot(0:24, hourly.SW.low.mean(timeIdx.SW), 'r');
+plot(0:36, hourly.mean.CT_top(timeIdx), 'r'); 
+plot(0:36, hourly.mean.NE_top(timeIdx), 'r'); 
+plot(0:36, hourly.mean.NW_top(timeIdx), 'r'); 
+plot(0:36, hourly.mean.SE_top(timeIdx), 'r'); 
+plot(0:36, hourly.mean.SW_top(timeIdx), 'r'); 
+
+xlim([12 36]);
+xlabel('Time [hr]');
+ylabel('Temperature [C]');
+xticks([12 24 36]);
+xticklabels({'Noon','Midnight','Noon'});
 
 
-tempIndoor.mean =  mean([hourly.CT.top.mean(timeIdx.CT), hourly.NE.top.mean(timeIdx.NE), hourly.NW.top.mean(timeIdx.NW),...
-    hourly.SE.top.mean(timeIdx.SE), hourly.SW.top.mean(timeIdx.SW), hourly.CT.mid.mean(timeIdx.CT), ...
-    hourly.NE.mid.mean(timeIdx.NE), hourly.NW.mid.mean(timeIdx.NW), hourly.SE.mid.mean(timeIdx.SE), ...
-    hourly.SW.mid.mean(timeIdx.SW), hourly.CT.low.mean(timeIdx.CT), hourly.NE.low.mean(timeIdx.NE), ...
-    hourly.NW.low.mean(timeIdx.NW), hourly.SE.low.mean(timeIdx.SE), hourly.SW.low.mean(timeIdx.SW)]');
+
+tempIndoor.mean = mean([hourly.mean.CT_low(timeIdx) ,hourly.mean.CT_mid(timeIdx) ,hourly.mean.CT_top(timeIdx), ...
+    hourly.mean.NE_low(timeIdx) ,hourly.mean.NE_mid(timeIdx) ,hourly.mean.NE_top(timeIdx), ...
+    hourly.mean.NW_low(timeIdx), hourly.mean.NW_mid(timeIdx), hourly.mean.NW_top(timeIdx), ...
+    hourly.mean.SE_low(timeIdx), hourly.mean.SE_mid(timeIdx), hourly.mean.SE_top(timeIdx), ...
+    hourly.mean.SW_low(timeIdx) ,hourly.mean.SW_mid(timeIdx), hourly.mean.SW_top(timeIdx)]');
+
+
 
 tempIndoor.std = sqrt((...
-    hourly.CT.top.std(timeIdx.CT).^2 + (hourly.CT.top.mean(timeIdx.CT)-tempIndoor.mean').^2 + ...
-    hourly.CT.mid.std(timeIdx.CT).^2 + (hourly.CT.mid.mean(timeIdx.CT)-tempIndoor.mean').^2 + ...
-    hourly.CT.low.std(timeIdx.CT).^2 + (hourly.CT.low.mean(timeIdx.CT)-tempIndoor.mean').^2 + ...
-    hourly.SE.top.std(timeIdx.SE).^2 + (hourly.SE.top.mean(timeIdx.SE)-tempIndoor.mean').^2 + ...
-    hourly.SE.mid.std(timeIdx.SE).^2 + (hourly.SE.mid.mean(timeIdx.SE)-tempIndoor.mean').^2 + ...
-    hourly.SE.low.std(timeIdx.SE).^2 + (hourly.SE.low.mean(timeIdx.SE)-tempIndoor.mean').^2 + ...
-    hourly.NE.top.std(timeIdx.NE).^2 + (hourly.NE.top.mean(timeIdx.NE)-tempIndoor.mean').^2 + ...
-    hourly.NE.mid.std(timeIdx.NE).^2 + (hourly.NE.mid.mean(timeIdx.NE)-tempIndoor.mean').^2 + ...
-    hourly.NE.low.std(timeIdx.NE).^2 + (hourly.NE.low.mean(timeIdx.NE)-tempIndoor.mean').^2 + ...
-    hourly.SW.top.std(timeIdx.SW).^2 + (hourly.SW.top.mean(timeIdx.SW)-tempIndoor.mean').^2 + ...
-    hourly.SW.mid.std(timeIdx.SW).^2 + (hourly.SW.mid.mean(timeIdx.SW)-tempIndoor.mean').^2 + ...
-    hourly.SW.low.std(timeIdx.SW).^2 + (hourly.SW.low.mean(timeIdx.SW)-tempIndoor.mean').^2 + ...
-    hourly.NW.top.std(timeIdx.NW).^2 + (hourly.NW.top.mean(timeIdx.NW)-tempIndoor.mean').^2 + ...
-    hourly.NW.mid.std(timeIdx.NW).^2 + (hourly.NW.mid.mean(timeIdx.NW)-tempIndoor.mean').^2 + ...
-    hourly.NW.low.std(timeIdx.NW).^2 + (hourly.NW.low.mean(timeIdx.NW)-tempIndoor.mean').^2)/15)';
+    hourly.std.CT_top(timeIdx).^2 + (hourly.mean.CT_top(timeIdx)-tempIndoor.mean').^2 + ...
+    hourly.std.CT_mid(timeIdx).^2 + (hourly.mean.CT_mid(timeIdx)-tempIndoor.mean').^2 + ...
+    hourly.std.CT_low(timeIdx).^2 + (hourly.mean.CT_low(timeIdx)-tempIndoor.mean').^2 + ...
+    hourly.std.SE_top(timeIdx).^2 + (hourly.mean.SE_top(timeIdx)-tempIndoor.mean').^2 + ...
+    hourly.std.SE_mid(timeIdx).^2 + (hourly.mean.SE_mid(timeIdx)-tempIndoor.mean').^2 + ...
+    hourly.std.SE_low(timeIdx).^2 + (hourly.mean.SE_low(timeIdx)-tempIndoor.mean').^2 + ...
+    hourly.std.NE_top(timeIdx).^2 + (hourly.mean.NE_top(timeIdx)-tempIndoor.mean').^2 + ...
+    hourly.std.NE_mid(timeIdx).^2 + (hourly.mean.NE_mid(timeIdx)-tempIndoor.mean').^2 + ...
+    hourly.std.NE_low(timeIdx).^2 + (hourly.mean.NE_low(timeIdx)-tempIndoor.mean').^2 + ...
+    hourly.std.SW_top(timeIdx).^2 + (hourly.mean.SW_top(timeIdx)-tempIndoor.mean').^2 + ...
+    hourly.std.SW_mid(timeIdx).^2 + (hourly.mean.SW_mid(timeIdx)-tempIndoor.mean').^2 + ...
+    hourly.std.SW_low(timeIdx).^2 + (hourly.mean.SW_low(timeIdx)-tempIndoor.mean').^2 + ...
+    hourly.std.NW_top(timeIdx).^2 + (hourly.mean.NW_top(timeIdx)-tempIndoor.mean').^2 + ...
+    hourly.std.NW_mid(timeIdx).^2 + (hourly.mean.NW_mid(timeIdx)-tempIndoor.mean').^2 + ...
+    hourly.std.NW_low(timeIdx).^2 + (hourly.mean.NW_low(timeIdx)-tempIndoor.mean').^2)/15)';
     
     
+
+%%% hourly average
+
+dt = 0.5;
+t_averaged = 0:dt:(36-dt);
+
+for i= 1:length(t_averaged)
+    idx = t_averaged(i) < t_stamp & t_stamp < (t_averaged(i)+dt);
+    T_indoor.mean(i) = mean(reshape(data.temp_in(:,idx),1,[]))-273.15;
+    T_indoor.std(i) = std(reshape(data.temp_in(:,idx),1,[]));
+    
+    T_wall_in.mean(i) = mean(reshape(data.wall_in(:,idx),1,[]))-273.15;
+    T_wall_in.std(i) = std(reshape(data.wall_in(:,idx),1,[]));
+    T_wall_out.mean(i) = mean(reshape(data.wall_out(:,idx),1,[]))-273.15;
+    T_wall_out.std(i) = std(reshape(data.wall_out(:,idx),1,[]));
+    
+    T_roof_in.mean(i) = mean(reshape(data.roof_in(:,idx),1,[]))-273.15;
+    T_roof_in.std(i) = std(reshape(data.roof_in(:,idx),1,[]));
+    T_roof_out.mean(i) = mean(reshape(data.roof_out(:,idx),1,[]))-273.15;
+    T_roof_out.std(i) = std(reshape(data.roof_out(:,idx),1,[]));
+end
+
+%%%
+
 
 subplot(1,2,2); hold on
-patch([0:24, fliplr(0:24)], [tempIndoor.mean+tempIndoor.std,  fliplr(tempIndoor.mean-tempIndoor.std)],[0.8 0.8 1.0],...
+plot(0.5:36.5, tempIndoor.mean, 'b', 'linewidth',2);
+plot(t_averaged+dt/2, T_indoor.mean, 'k', 'linewidth',2);
+% plot(t_averaged+dt/2, T_indoor.mean-273.15, 'b', 'linewidth',2);
+
+patch([0.5:36.5, fliplr(0.5:36.5)], [tempIndoor.mean+tempIndoor.std,  fliplr(tempIndoor.mean-tempIndoor.std)],[0.8 0.8 1.0],...
     'edgecolor','none','facealpha',0.5);
-plot(0:24, tempIndoor.mean, 'b', 'linewidth',2);
+% plot(0:36, tempIndoor.mean, 'b', 'linewidth',2);
+xlim([12 36]);
+ylim([16 30]);
 
 % prediction
-% patch([t_stamp' fliplr(t_stamp')], [max(data.temp_out) fliplr(min(data.temp_out))]-273.15,[0.8 0.8 0.8],...
-%     'edgecolor','none','facealpha',0.5);
-patch([t_stamp' fliplr(t_stamp')], [max(data.temp_in) fliplr(min(data.temp_in))]-273.15,[0.8 0.8 0.8],...
+%%% hourly data
+plot(t_averaged+dt/2, T_indoor.mean, 'k', 'linewidth',2);
+patch([t_averaged+dt/2, fliplr(t_averaged+dt/2)], [T_indoor.mean+T_indoor.std,  fliplr(T_indoor.mean-T_indoor.std)],[0.8 0.8 0.8],...
     'edgecolor','none','facealpha',0.5);
-% plot(t_stamp, mean(data.temp_out)-273.15,'k','linewidth',2);
-plot(t_stamp, mean(data.temp_in)-273.15,'k','linewidth',2);
 
+%%% minutely data
+% patch([t_stamp' fliplr(t_stamp')], [max(data.temp_in) fliplr(min(data.temp_in))]-273.15,[0.8 0.8 0.8],...
+%     'edgecolor','none','facealpha',0.5);
+% plot(t_stamp, mean(data.temp_in)-273.15,'k','linewidth',2);
 
-xlim([0 24]);
+legend('Measurement','Prediction');
+xlim([12 36]);
 xlabel('Time');
 ylabel('Temperature [^\circC]');
+xticks([12 24 36]);
+xticklabels({'Noon','Midnight','Noon'});
+
 
 
 %% wall surface temperatures
 
-targetDate = datetime(2019,2,5,12,0,0);
-timeIdx.E_wall = (targetDate-day(1)) <= hourly.E_wall.time & hourly.E_wall.time <= targetDate ; 
-timeIdx.W_wall = (targetDate-day(1)) <= hourly.W_wall.time & hourly.W_wall.time <= targetDate ; 
-timeIdx.S_wall = (targetDate-day(1)) <= hourly.S_wall.time & hourly.S_wall.time <= targetDate ; 
-timeIdx.N_wall = (targetDate-day(1)) <= hourly.N_wall.time & hourly.N_wall.time <= targetDate ; 
 
 figure();
 subplot(1,2,1); hold on
 % measurement
-plot(0:24, hourly.N_wall.in.mean(timeIdx.N_wall), 'r');  
-plot(0:24, hourly.S_wall.in.mean(timeIdx.S_wall), 'g');  
-plot(0:24, hourly.E_wall.in.mean(timeIdx.E_wall), 'b');  
-plot(0:24, hourly.W_wall.in.mean(timeIdx.W_wall), 'c');  
+patch([0.5:36.5, fliplr(0.5:36.5)],...
+    [hourly.mean.N_wall_in(timeIdx)'+hourly.std.N_wall_in(timeIdx)',...
+    fliplr(hourly.mean.N_wall_in(timeIdx)'-hourly.std.N_wall_in(timeIdx)')],...
+    [1.0 0.5 0.5],'edgecolor','none','facealpha',0.5);
+plot(0.5:36.5, hourly.mean.N_wall_in(timeIdx), 'r');  
+
+patch([0.5:36.5, fliplr(0.5:36.5)],...
+    [hourly.mean.S_wall_in(timeIdx)'+hourly.std.S_wall_in(timeIdx)',...
+    fliplr(hourly.mean.S_wall_in(timeIdx)'-hourly.std.S_wall_in(timeIdx)')],...
+    [0.5 1.0 0.5],'edgecolor','none','facealpha',0.5);
+plot(0.5:36.5, hourly.mean.S_wall_in(timeIdx), 'g');  
+
+patch([0.5:36.5, fliplr(0.5:36.5)],...
+    [hourly.mean.E_wall_in(timeIdx)'+hourly.std.E_wall_in(timeIdx)',...
+    fliplr(hourly.mean.E_wall_in(timeIdx)'-hourly.std.E_wall_in(timeIdx)')],...
+    [0.5 0.5 1.0],'edgecolor','none','facealpha',0.5);
+plot(0.5:36.5, hourly.mean.E_wall_in(timeIdx), 'b');  
+
+patch([0.5:36.5, fliplr(0.5:36.5)],...
+    [hourly.mean.W_wall_in(timeIdx)'+hourly.std.W_wall_in(timeIdx)',...
+    fliplr(hourly.mean.W_wall_in(timeIdx)'-hourly.std.W_wall_in(timeIdx)')],...
+    [0.5 1.0 1.0],'edgecolor','none','facealpha',0.5);
+plot(0.5:36.5, hourly.mean.W_wall_in(timeIdx), 'c');  
+
 
 % prediction
-patch([t_stamp' fliplr(t_stamp')], [max(data.wall_in) fliplr(min(data.wall_in))]-273.15,[0.8 0.8 0.8],...
+patch([t_averaged+dt/2, fliplr(t_averaged+dt/2)], [T_wall_in.mean+T_wall_in.std,  fliplr(T_wall_in.mean-T_wall_in.std)],[0.8 0.8 0.8],...
     'edgecolor','none','facealpha',0.5);
-plot(t_stamp, mean(data.wall_in)-273.15,'k','linewidth',1.5);
+plot(t_averaged+dt/2, T_wall_in.mean, 'k', 'linewidth',2);
+
+%%% output result
+% patch([t_stamp' fliplr(t_stamp')], [max(data.wall_in) fliplr(min(data.wall_in))]-273.15,[0.8 0.8 0.8],...
+%     'edgecolor','none','facealpha',0.5);
+% plot(t_stamp, mean(data.wall_in)-273.15,'k','linewidth',1.5);
 
 title('Wall; inner surface temperature');
-xlim([0 24]);
-ylabel('Temperature [^\circC]');
+xlim([12 36]);      xlabel('Time'); 
+ylim([14 28]);      ylabel('Temperature [^\circC]');
+xticks([12 24 36]);
+xticklabels({'Noon','Midnight','Noon'});
 
 
 subplot(1,2,2); hold on
 % measurement
-plot(0:24, hourly.N_wall.out.mean(timeIdx.N_wall), 'r');  
-plot(0:24, hourly.S_wall.out.mean(timeIdx.S_wall), 'g');  
+patch([0.5:36.5, fliplr(0.5:36.5)],...
+    [hourly.mean.N_wall_out(timeIdx)'+hourly.std.N_wall_out(timeIdx)',...
+    fliplr(hourly.mean.N_wall_out(timeIdx)'-hourly.std.N_wall_out(timeIdx)')],...
+    [1.0 0.5 0.5],'edgecolor','none','facealpha',0.5);
+plot(0.5:36.5, hourly.mean.N_wall_out(timeIdx), 'r');  
+
+patch([0.5:36.5, fliplr(0.5:36.5)],...
+    [hourly.mean.S_wall_out(timeIdx)'+hourly.std.S_wall_out(timeIdx)',...
+    fliplr(hourly.mean.S_wall_out(timeIdx)'-hourly.std.S_wall_out(timeIdx)')],...
+    [0.5 1.0 0.5],'edgecolor','none','facealpha',0.5);
+plot(0.5:36.5, hourly.mean.S_wall_out(timeIdx), 'g');  
+
 
 % prediction
-patch([t_stamp' fliplr(t_stamp')], [max(data.wall_out) fliplr(min(data.wall_out))]-273.15,[0.8 0.8 0.8],...
+patch([t_averaged+dt/2, fliplr(t_averaged+dt/2)], [T_wall_out.mean+T_wall_out.std,  fliplr(T_wall_out.mean-T_wall_out.std)],[0.8 0.8 0.8],...
     'edgecolor','none','facealpha',0.5);
-plot(t_stamp, mean(data.wall_out)-273.15,'k','linewidth',1.5);
+plot(t_averaged+dt/2, T_wall_out.mean, 'k', 'linewidth',2);
+% patch([t_stamp' fliplr(t_stamp')], [max(data.wall_out) fliplr(min(data.wall_out))]-273.15,[0.8 0.8 0.8],...
+%     'edgecolor','none','facealpha',0.5);
+% plot(t_stamp, mean(data.wall_out)-273.15,'k','linewidth',1.5);
 
 
 title('Wall; outer surface temperature');
-xlim([0 24]);
-ylabel('Temperature [^\circC]')
+xlim([12 36]);      xlabel('Time'); 
+ylim([14 28]);      ylabel('Temperature [^\circC]');
+xticks([12 24 36]);
+xticklabels({'Noon','Midnight','Noon'});
 
 
 
 %% roof surface temperatures
-targetDate = datetime(2019,2,5,12,0,0);
-timeIdx.Roof = (targetDate-day(1)) <= hourly.Roof.time & hourly.Roof.time <= targetDate ; 
-
 
 figure();
 subplot(1,2,1); hold on
 % measurement
-plot(0:24, hourly.Roof.in.mean(timeIdx.Roof)-hourly.Roof.in.std(timeIdx.Roof), 'r:');  
-plot(0:24, hourly.Roof.in.mean(timeIdx.Roof), 'r');  
-plot(0:24, hourly.Roof.in.mean(timeIdx.Roof)+hourly.Roof.in.std(timeIdx.Roof), 'r:');  
+patch([0.5:36.5, fliplr(0.5:36.5)],...
+    [hourly.mean.Roof_in(timeIdx)'+hourly.std.Roof_in(timeIdx)',...
+    fliplr(hourly.mean.Roof_in(timeIdx)'-hourly.std.Roof_in(timeIdx)')],...
+    [1.0 0.5 0.5],'edgecolor','none','facealpha',0.5);
+plot(0.5:36.5, hourly.mean.Roof_in(timeIdx), 'r', 'linewidth',2);  
+
 
 % prediction
-patch([t_stamp' fliplr(t_stamp')], [max(data.roof_in) fliplr(min(data.roof_in))]-273.15,[0.8 0.8 0.8],...
+%%% hourly
+patch([t_averaged+dt/2, fliplr(t_averaged+dt/2)], [T_roof_in.mean+T_roof_in.std,  fliplr(T_roof_in.mean-T_roof_in.std)],[0.8 0.8 0.8],...
     'edgecolor','none','facealpha',0.5);
-plot(t_stamp, mean(data.roof_in)-273.15,'k','linewidth',1.5);
+plot(t_averaged+dt/2, T_roof_in.mean, 'k', 'linewidth',2);
+
+%%% minutely
+% patch([t_stamp' fliplr(t_stamp')], [max(data.roof_in) fliplr(min(data.roof_in))]-273.15,[0.8 0.8 0.8],...
+%     'edgecolor','none','facealpha',0.5);
+% plot(t_stamp, mean(data.roof_in)-273.15,'k','linewidth',1.5);
+
+
 title('Roof; inner surface temperature');
-xlim([0 24]);
-ylabel('Temperature [^\circC]');
+xlim([12 36]);      xlabel('Time'); 
+ylim([10 60]);      ylabel('Temperature [^\circC]');
+xticks([12 24 36]);
+xticklabels({'Noon','Midnight','Noon'});
 
 
 subplot(1,2,2); hold on
 % measurement
-plot(0:24, hourly.Roof.out.mean(timeIdx.Roof)-hourly.Roof.out.std(timeIdx.Roof), 'r:');  
-plot(0:24, hourly.Roof.out.mean(timeIdx.Roof), 'r');  
-plot(0:24, hourly.Roof.out.mean(timeIdx.Roof)+hourly.Roof.out.std(timeIdx.Roof), 'r:');  
-
+patch([0.5:36.5, fliplr(0.5:36.5)],...
+    [hourly.mean.Roof_out(timeIdx)'+hourly.std.Roof_out(timeIdx)',...
+    fliplr(hourly.mean.Roof_out(timeIdx)'-hourly.std.Roof_out(timeIdx)')],...
+    [1.0 0.5 0.5],'edgecolor','none','facealpha',0.5);
+plot(0.5:36.5, hourly.mean.Roof_in(timeIdx), 'r', 'linewidth',2);  
 % prediction
-patch([t_stamp' fliplr(t_stamp')], [max(data.roof_out) fliplr(min(data.roof_out))]-273.15,[0.8 0.8 0.8],...
+%%% hourly
+patch([t_averaged+dt/2, fliplr(t_averaged+dt/2)], [T_roof_out.mean+T_roof_out.std,  fliplr(T_roof_out.mean-T_roof_out.std)],[0.8 0.8 0.8],...
     'edgecolor','none','facealpha',0.5);
-plot(t_stamp, mean(data.roof_out)-273.15,'k','linewidth',1.5);
+plot(t_averaged+dt/2, T_roof_out.mean, 'k', 'linewidth',2);
 
 
+%%% minutely
+% patch([t_stamp' fliplr(t_stamp')], [max(data.roof_out) fliplr(min(data.roof_out))]-273.15,[0.8 0.8 0.8],...
+%     'edgecolor','none','facealpha',0.5);
+% plot(t_stamp, mean(data.roof_out)-273.15,'k','linewidth',1.5);
 
-title('Roofl outer surface temperature');
-xlim([0 24]);
-ylabel('Temperature [^\circC]');
+title('Roof: outer surface temperature');
+xlim([12 36]);      xlabel('Time'); 
+ylim([10 60]);      ylabel('Temperature [^\circC]');
+xticks([12 24 36]);
+xticklabels({'Noon','Midnight','Noon'});
 
 
 

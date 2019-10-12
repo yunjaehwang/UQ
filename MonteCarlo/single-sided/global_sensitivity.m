@@ -6,6 +6,8 @@
 %   Yunjae Hwang (yunjaeh@stanford.edu)
 %   
 % ----------------------------------------------------------------------- %
+clear; clc;
+
 delete(gcp('nocreate'));
 tic
 mkdir ./data
@@ -15,8 +17,8 @@ mkdir ./input
 mkdir ./output
 
 num_core    = 12;       % # of cores used for parallel process
-num_param   = 9;        % # of uncertain parameters
-num_iter    = 50;       % # of total number of iteration
+num_param   = 10;        % # of uncertain parameters
+num_iter    = 30;       % # of total number of iteration
 num_sample  = 100;      % # of samples in each iteration
 
 % Procedures:
@@ -27,7 +29,7 @@ num_sample  = 100;      % # of samples in each iteration
 
 % nominal parameteres       : np(1, ..., n)
 %   values not changing in the simulation
-num_case = '1';
+num_case = '4';
 date = 'Night_0205';
 config ='night_SV';
 
@@ -62,26 +64,28 @@ system(['echo ',message,' >> ./case.csv']);
 %   second column : maximum of UP range
 up = zeros(num_param, 2);
 up( 1,1) = 1;           up( 1,2) = 4;     % Heat convective coefficient; internal
-up( 2,1) = 0.8;         up( 2,2) = 1.2;     % Heat convective coefficient; external
+up( 2,1) = 0.75;         up( 2,2) = 1.25;     % Heat convective coefficient; external
 % up( 3,1) = 52.7;        up( 3,2) = 75.9;    % Conductivity; roof
 % up( 4,1) = 0.6;         up( 4,2) = 1.31;    % Conductivity; wall
-% up( 5,1) = 0.1;         up( 5,2) = 0.2;    % Emissivity; roof
+
 % up( 6,1) = 0.8;         up( 6,2) = 0.9;    % Emissivity; wall
 up( 3,1) = 0.29;        up( 3,2) = 0.66;    % Absorptivity; roof
-up( 4,1) = 1-0.29;         up( 4,2) = 1+0.29;    % Ventilation rate 1
-up( 5,1) = 1-0.29;         up( 5,2) = 1+0.29;    % Ventilation rate 2
+up( 4,1) = 0.06;         up( 4,2) = 0.346;    % Emissivity; roof
+up( 5,1) = 1-0.29;         up( 5,2) = 1+0.29;    % Ventilation rate 1
+up( 6,1) = 1-0.29;         up( 6,2) = 1+0.29;    % Ventilation rate 2
 
 % infiltration range
 % avg of min, mean, max: 3.9487, 4.3925, 4.8275
 % min(min), max(max): 3.27, 5.94
-up( 6,1) = 3.27;        up( 6,2) = 5.94;    % Infiltration
-up( 7,1) = 0.0+eps;        up( 7,2) = 1.0-eps;    % Temperature quantile
-up( 8,1) = 0.0+eps;        up( 8,2) = 1.0-eps;    % Radiation quantile
-up( 9,1) = 0.0+eps;        up( 9,2) = 1.0-eps;    % Wind quantile
+up( 7,1) = 3.27;        up( 7,2) = 5.94;    % Infiltration
+up( 8,1) = 0.0+eps;        up( 8,2) = 1.0-eps;    % Temperature quantile
+up( 9,1) = 0.0+eps;        up( 9,2) = 1.0-eps;    % Radiation quantile
+up(10,1) = 0.0+eps;        up( 10,2) = 1.0-eps;    % Wind quantile
 
 
 
 for iter = 1:num_iter
+    
     A = rand(num_sample,num_param);
     for i=1:num_param
         A(:,i) = up(i,1) + (up(i,2) - up(i,1))*A(:,i);
@@ -106,7 +110,7 @@ for iter = 1:num_iter
         system(['echo ''',num2str(A(i,7)),''' >> ./input/UQ_input_',num2str(i),'.in']);
         system(['echo ''',num2str(A(i,8)),''' >> ./input/UQ_input_',num2str(i),'.in']);
         system(['echo ''',num2str(A(i,9)),''' >> ./input/UQ_input_',num2str(i),'.in']);
-%         system(['echo ''',num2str(A(i,10)),''' >> ./input/UQ_input_',num2str(i),'.in']);
+        system(['echo ''',num2str(A(i,10)),''' >> ./input/UQ_input_',num2str(i),'.in']);
 %         system(['echo ''',num2str(A(i,11)),''' >> ./input/UQ_input_',num2str(i),'.in']);
 %         system(['echo ''',num2str(A(i,12)),''' >> ./input/UQ_input_',num2str(i),'.in']);
 %         system(['echo ''',num2str(A(i,13)),''' >> ./input/UQ_input_',num2str(i),'.in']);
