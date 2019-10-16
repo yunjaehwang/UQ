@@ -1,5 +1,0 @@
-stdout            | info    | ... loading "RADIATION" from "/home/yunjaeh/github/UQ/MonteCarlo/weatherInputs/Night_0211.mat"
-stdout            | info    | ... loading "TEMPERATURE" from "/home/yunjaeh/github/UQ/MonteCarlo/weatherInputs/Night_0211.mat"
-stdout            | info    | ... loading "WIND" from "/home/yunjaeh/github/UQ/MonteCarlo/weatherInputs/Night_0211.mat"
-stdout            | info    | The initialization finished successfully without homotopy method.
-stdout            | info    | The simulation finished successfully.
