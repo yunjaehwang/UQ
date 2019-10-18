@@ -125,7 +125,7 @@ omc $FILE_SCRIPT
 f_outdoor=$(head -n 1 $FILE_OUTPUT | tr ',' '\n' | grep -n '\"OutdoorTemperature\"' | awk -F: '{print$1}' )
 f_radiation=$(head -n 1 $FILE_OUTPUT | tr ',' '\n' | grep -n 'SolarRadiation' | awk -F: '{print$1}' )
 f_wind=$(head -n 1 $FILE_OUTPUT | tr ',' '\n' | grep -n 'WindSpeed' | awk -F: '{print$1}' )
-f_indoor=$(head -n 1 $FILE_OUTPUT | tr ',' '\n' | grep -n 'Temperature_Indoor.T' | awk -F: '{print$1}' )
+f_indoor=$(head -n 1 $FILE_OUTPUT | tr ',' '\n' | grep -n 'Capacitor_indoor_air.port.T' | awk -F: '{print$1}' )
 f_wall=$(head -n 1 $FILE_OUTPUT | tr ',' '\n' | grep -n 'Conduction_wall1_outer.port_b.T' | awk -F: '{print$1}' )
 f_wall_in=$(head -n 1 $FILE_OUTPUT | tr ',' '\n' | grep -n 'Conduction_wall1_inner.port_b.T' | awk -F: '{print$1}' )
 f_wall_out=$(head -n 1 $FILE_OUTPUT | tr ',' '\n' | grep -n 'Conduction_wall1_outer.port_a.T' | awk -F: '{print$1}' )

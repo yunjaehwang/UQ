@@ -29,18 +29,18 @@ num_sample  = 100;      % # of samples in each iteration
 
 % nominal parameteres       : np(1, ..., n)
 %   values not changing in the simulation
-num_case = '4';
-date = 'Night_0205';
-config ='night_SV';
+num_case = '8';
+date = 'Night_0210';
+config ='night_SFV';
 
 
 % height_1 = '0.91';      area_1 = '0.62';        % window
 height_1 = '0.25';      area_1 = '0.6598';      % skylight
 % height_1 = '0.43';    area_1 = '0.05';          % rear vent
 
-height_2 = '0.43';    area_2 = '0.05';          % rear vent
+% height_2 = '0.43';    area_2 = '0.05';          % rear vent
 % height_2 = '0.91';    area_2 = '0.62';          % window
-% height_2 = '0.09';    area_2 = '0.005';         % floor vent
+height_2 = '0.09';    area_2 = '0.005';         % floor vent
 
 % height_2 = '0.0';       area_2 ='0.0';          % single sided
 

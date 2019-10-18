@@ -52,8 +52,6 @@ model Outfall
   end invUniform;
 
 // model blocks
-  Modelica.Thermal.HeatTransfer.Sensors.TemperatureSensor Temperature_Indoor annotation(
-    Placement(visible = true, transformation(origin = {136, 82}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
   Modelica.Thermal.HeatTransfer.Components.ThermalConductor Conduction_wall1_inner(G = 33.10 * conductivity_wall) annotation(
     Placement(visible = true, transformation(origin = {-46, 44}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
   Modelica.Thermal.HeatTransfer.Components.ThermalConductor Conduction_wall1_outer(G = 33.10 * conductivity_wall) annotation(
@@ -104,7 +102,7 @@ model Outfall
     Placement(visible = true, transformation(origin = {-124, -72}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
   Modelica.Thermal.HeatTransfer.Components.HeatCapacitor Capacitor_indoor_air(C = 21841, T(fixed = true, start = 298.5)) annotation(
     Placement(visible = true, transformation(origin = {114, 112}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
-  Modelica.Thermal.HeatTransfer.Components.ThermalCollector thermalCollector1(m = 12) annotation(
+  Modelica.Thermal.HeatTransfer.Components.ThermalCollector thermalCollector1(m = 11) annotation(
     Placement(visible = true, transformation(origin = {92, 88}, extent = {{-10, -10}, {10, 10}}, rotation = 90)));
   Modelica.Thermal.HeatTransfer.Components.Convection Convection_floor annotation(
     Placement(visible = true, transformation(origin = {-2, -92}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
@@ -112,12 +110,6 @@ model Outfall
     Placement(visible = true, transformation(origin = {-122, 154}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
   Modelica.Thermal.HeatTransfer.Sources.PrescribedTemperature Temperature_floor annotation(
     Placement(visible = true, transformation(origin = {-106, -114}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
-  Modelica.Blocks.Sources.Constant Infiltration(k = 17.74 / 3600 * 1005 * 1.225 * infiltration) annotation(
-    Placement(visible = true, transformation(origin = {118, -54}, extent = {{-10, -10}, {10, 10}}, rotation = 90)));
-  Modelica.Blocks.Math.Product product1 annotation(
-    Placement(visible = true, transformation(origin = {98, -16}, extent = {{-10, -10}, {10, 10}}, rotation = 90)));
-  Modelica.Thermal.HeatTransfer.Sources.PrescribedHeatFlow Heatflow_infiltration annotation(
-    Placement(visible = true, transformation(origin = {96, 16}, extent = {{10, 10}, {-10, -10}}, rotation = -90)));
   Modelica.Blocks.Sources.CombiTimeTable Data_solar_radiation(columns = 2:3,fileName = inputDataLoc, tableName = "RADIATION", tableOnFile = true, timeScale = 60) annotation(
     Placement(visible = true, transformation(origin = {-312, 164}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
   Modelica.Blocks.Sources.CombiTimeTable Data_outdoor_temperature(columns = 2:3,fileName = inputDataLoc, tableName = "TEMPERATURE", tableOnFile = true, timeScale = 60) annotation(
@@ -156,11 +148,9 @@ model Outfall
     Placement(visible = true, transformation(origin = {-278, 90}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
   Modelica.Blocks.Sources.CombiTimeTable Data_wind_speed(columns = 2:3,fileName = inputDataLoc, tableName = "WIND", tableOnFile = true, timeScale = 60) annotation(
     Placement(visible = true, transformation(origin = {-336, -108}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
-  Modelica.Blocks.Math.Add Temperature_difference(k1 = +1, k2 = -1) annotation(
-    Placement(visible = true, transformation(origin = {90, -76}, extent = {{-10, -10}, {10, 10}}, rotation = 90)));
   Two_single_ventilation two_single_ventilation1 annotation(
     Placement(visible = true, transformation(origin = {62, -36}, extent = {{-10, -10}, {10, 10}}, rotation = 90)));
-  Modelica.Thermal.HeatTransfer.Components.BodyRadiation Radiation_roof_to_floor(Gr = 7.22 * 0.85) annotation(
+  Modelica.Thermal.HeatTransfer.Components.BodyRadiation Radiation_roof_to_floor(Gr = 7.22 / (1 / emissivity_roof + 1 / 0.85 - 1)) annotation(
     Placement(visible = true, transformation(origin = {32, 134}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
   Modelica.Blocks.Sources.Constant Convection_A(k = 4.4 * convection_coef_outer) annotation(
     Placement(visible = true, transformation(origin = {-220, -180}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
@@ -197,39 +187,27 @@ model Outfall
 equation
   OutdoorTemperature = invNormal(qt_temperature, mu = Data_outdoor_temperature.y[1], sigma = Data_outdoor_temperature.y[2]);
   SolarRadiation = invUniform(qt_radiation, y_min = Data_solar_radiation.y[1], y_max = Data_solar_radiation.y[2]);
-  WindSpeed = max(0.01,invWeibull(qt_wind, lambda = Data_wind_speed.y[1], k = Data_wind_speed.y[2]));
-  
+  WindSpeed = max(0.01, invWeibull(qt_wind, lambda = Data_wind_speed.y[1], k = Data_wind_speed.y[2]));
 // Outdoor temperature blocks
   connect(OutdoorTemperature, multiProduct1.u[3]) annotation(
     Line(points = {{-296, -28}, {-300, -28}, {-300, 88}, {-288, 88}, {-288, 90}}, color = {0, 0, 127}));
   connect(OutdoorTemperature, two_single_ventilation1.Port_outdoor) annotation(
     Line(points = {{-296, -28}, {-264, -28}, {-264, -126}, {68, -126}, {68, -46}}, color = {0, 0, 127}));
-  connect(OutdoorTemperature, Temperature_difference.u1) annotation(
-    Line(points = {{-296, -28}, {-286, -28}, {-286, -134}, {84, -134}, {84, -88}, {84, -88}}, color = {0, 0, 127}));
   connect(OutdoorTemperature, sqrt1.u) annotation(
     Line(points = {{-296, -28}, {-290, -28}, {-290, 42}, {-330, 42}, {-330, 62}, {-324, 62}}, color = {0, 0, 127}));
   connect(OutdoorTemperature, OutdoorTemperatureToK.T) annotation(
     Line(points = {{-296, -28}, {-278, -28}, {-278, -28}, {-278, -28}}, color = {0, 0, 127}));
-  
 // solar radiation blocks
   connect(SolarRadiation, product2.u1) annotation(
     Line(points = {{-270, 164}, {-254, 164}, {-254, 158}, {-244, 158}, {-244, 158}}, color = {0, 0, 127}));
-  
 // wind speed blocks
   connect(WindSpeed, two_single_ventilation1.Port_wind) annotation(
     Line(points = {{-297, -108}, {-168, -108}, {-168, -142}, {56, -142}, {56, -46}}, color = {0, 0, 127}));
   connect(WindSpeed, log1.u) annotation(
     Line(points = {{-297, -108}, {-306, -108}, {-306, -142}, {-296, -142}}, color = {0, 0, 127}));
-  
 // other blocks
   connect(Floor_temperature.y, Temperature_floor.T) annotation(
     Line(points = {{-131, -114}, {-118, -114}}, color = {0, 0, 127}));
-  connect(Infiltration.y, product1.u2) annotation(
-    Line(points = {{118, -43}, {104, -43}, {104, -28}}, color = {0, 0, 127}));
-  connect(product1.y, Heatflow_infiltration.Q_flow) annotation(
-    Line(points = {{98, -5}, {98, 1.5}, {96, 1.5}, {96, 6}}, color = {0, 0, 127}));
-  connect(Temperature_difference.y, product1.u1) annotation(
-    Line(points = {{90, -65}, {90, -45.5}, {92, -45.5}, {92, -28}}, color = {0, 0, 127}));
   connect(OutdoorTemperatureToK.port, Convection_wall1_outer.solid) annotation(
     Line(points = {{-256, -28}, {-236, -28}, {-236, 58}, {-136, 58}}, color = {191, 0, 0}));
   connect(Convection_wall1_outer.fluid, Conduction_wall1_outer.port_a) annotation(
@@ -240,8 +218,6 @@ equation
     Line(points = {{42, 134}, {46, 134}, {46, -114}, {-96, -114}}, color = {191, 0, 0}));
   connect(Conduction_roof_inner.port_b, Radiation_roof_to_floor.port_a) annotation(
     Line(points = {{-36, 102}, {22, 102}, {22, 134}}, color = {191, 0, 0}));
-  connect(Capacitor_indoor_air.port, Temperature_Indoor.port) annotation(
-    Line(points = {{114, 102}, {114, 90}, {126, 90}, {126, 82}}, color = {191, 0, 0}));
   connect(thermalCollector1.port_b, Capacitor_indoor_air.port) annotation(
     Line(points = {{102, 88}, {114, 88}, {114, 102}}, color = {191, 0, 0}));
   connect(two_single_ventilation1.Port_indoor, thermalCollector1.port_a[11]) annotation(
@@ -256,8 +232,6 @@ equation
     Line(points = {{4, 54}, {40, 54}, {40, 88}, {82, 88}}, color = {191, 0, 0}));
   connect(Convection_floor.fluid, thermalCollector1.port_a[9]) annotation(
     Line(points = {{8, -92}, {40, -92}, {40, 88}, {82, 88}}, color = {191, 0, 0}));
-  connect(Heatflow_infiltration.port, thermalCollector1.port_a[12]) annotation(
-    Line(points = {{96, 26}, {82, 26}, {82, 88}}, color = {191, 0, 0}));
   connect(Radiation_roof_inner.port_b, thermalCollector1.port_a[2]) annotation(
     Line(points = {{4, 92}, {32, 92}, {32, 88}, {82, 88}}, color = {191, 0, 0}));
   connect(Radiation_wall1_inner.port_b, thermalCollector1.port_a[4]) annotation(
@@ -324,8 +298,6 @@ equation
     Line(points = {{-174, 78}, {-170, 78}, {-170, 84}, {-168, 84}}, color = {0, 0, 127}));
   connect(Area_roof.y, product5.u1) annotation(
     Line(points = {{-172, 134}, {-170, 134}, {-170, 140}, {-168, 140}}, color = {0, 0, 127}));
-  connect(Temperature_Indoor.T, Temperature_difference.u2) annotation(
-    Line(points = {{146, 82}, {153, 82}, {153, 82}, {158, 82}, {158, -106}, {96, -106}, {96, -97}, {96, -97}, {96, -88}}, color = {0, 0, 127}));
   connect(Convection_coef_wall3_inner.y, Convection_wall3_inner.Gc) annotation(
     Line(points = {{-27, 20}, {-21.75, 20}, {-21.75, 20}, {-16.5, 20}, {-16.5, 20}, {-6, 20}, {-6, 20}, {-6, 20}, {-6, 18}}, color = {0, 0, 127}));
   connect(Convection_coef_wall1_inner.y, Convection_wall1_inner.Gc) annotation(
