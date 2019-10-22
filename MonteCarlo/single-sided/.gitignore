@@ -1,4 +1,4 @@
 # git ignore
 *~
 data*
-figures/
+# figures/

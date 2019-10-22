@@ -29,18 +29,18 @@ num_sample  = 100;      % # of samples in each iteration
 
 % nominal parameteres       : np(1, ..., n)
 %   values not changing in the simulation
-num_case = '8';
-date = 'Night_0210';
-config ='night_SFV';
+num_case = '12';
+date = 'Night_0206';
+config ='night_WV';
 
 
-% height_1 = '0.91';      area_1 = '0.62';        % window
-height_1 = '0.25';      area_1 = '0.6598';      % skylight
+height_1 = '0.91';      area_1 = '0.62';        % window
+% height_1 = '0.25';      area_1 = '0.6598';      % skylight
 % height_1 = '0.43';    area_1 = '0.05';          % rear vent
 
-% height_2 = '0.43';    area_2 = '0.05';          % rear vent
+height_2 = '0.43';    area_2 = '0.05';          % rear vent
 % height_2 = '0.91';    area_2 = '0.62';          % window
-height_2 = '0.09';    area_2 = '0.005';         % floor vent
+% height_2 = '0.09';    area_2 = '0.005';         % floor vent
 
 % height_2 = '0.0';       area_2 ='0.0';          % single sided
 
@@ -71,8 +71,8 @@ up( 2,1) = 0.75;         up( 2,2) = 1.25;     % Heat convective coefficient; ext
 % up( 6,1) = 0.8;         up( 6,2) = 0.9;    % Emissivity; wall
 up( 3,1) = 0.29;        up( 3,2) = 0.66;    % Absorptivity; roof
 up( 4,1) = 0.06;         up( 4,2) = 0.346;    % Emissivity; roof
-up( 5,1) = 1-0.29;         up( 5,2) = 1+0.29;    % Ventilation rate 1
-up( 6,1) = 1-0.29;         up( 6,2) = 1+0.29;    % Ventilation rate 2
+up( 5,1) = 1-0.6;         up( 5,2) = 1;    % Ventilation rate 1
+up( 6,1) = 1-0.6;         up( 6,2) = 1;    % Ventilation rate 2
 
 % infiltration range
 % avg of min, mean, max: 3.9487, 4.3925, 4.8275

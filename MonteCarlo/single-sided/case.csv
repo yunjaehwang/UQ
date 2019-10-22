@@ -26,3 +26,7 @@ case, 5, date, Night_0206, configuration, night_WV, height_1, 0.91, height_2, 0.
 case, 6, date, Night_0205, configuration, night_SV, height_1, 0.25, height_2, 0.43, area_1, 0.6598, area_2, 0.05
 case, 7, date, Night_0211, configuration, night_SV, height_1, 0.25, height_2, 0.91, area_1, 0.6598, area_2, 0.62
 case, 8, date, Night_0210, configuration, night_SFV, height_1, 0.25, height_2, 0.09, area_1, 0.6598, area_2, 0.005
+case, 9, date, Night_0205, configuration, night_SV, height_1, 0.25, height_2, 0.43, area_1, 0.6598, area_2, 0.05
+case, 10, date, Night_0211, configuration, night_SW, height_1, 0.25, height_2, 0.91, area_1, 0.6598, area_2, 0.62
+case, 11, date, Night_0210, configuration, night_SFV, height_1, 0.25, height_2, 0.09, area_1, 0.6598, area_2, 0.005
+case, 12, date, Night_0206, configuration, night_WV, height_1, 0.91, height_2, 0.43, area_1, 0.62, area_2, 0.05

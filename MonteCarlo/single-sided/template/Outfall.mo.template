@@ -152,18 +152,8 @@ model Outfall
     Placement(visible = true, transformation(origin = {62, -36}, extent = {{-10, -10}, {10, 10}}, rotation = 90)));
   Modelica.Thermal.HeatTransfer.Components.BodyRadiation Radiation_roof_to_floor(Gr = 7.22 / (1 / emissivity_roof + 1 / 0.85 - 1)) annotation(
     Placement(visible = true, transformation(origin = {32, 134}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
-  Modelica.Blocks.Sources.Constant Convection_A(k = 4.4 * convection_coef_outer) annotation(
-    Placement(visible = true, transformation(origin = {-220, -180}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
-  Modelica.Blocks.Sources.Constant Convection_B(k = 0.78) annotation(
-    Placement(visible = true, transformation(origin = {-286, -168}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
-  Modelica.Blocks.Math.Exp exp1 annotation(
-    Placement(visible = true, transformation(origin = {-220, -152}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
-  Modelica.Blocks.Math.Log log1 annotation(
-    Placement(visible = true, transformation(origin = {-284, -142}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
-  Modelica.Blocks.Math.Product product3 annotation(
-    Placement(visible = true, transformation(origin = {-252, -152}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
-  Modelica.Blocks.Math.Product product4 annotation(
-    Placement(visible = true, transformation(origin = {-194, -164}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+  Modelica.Blocks.Sources.Constant Convection_A(k =  convection_coef_outer) annotation(
+    Placement(visible = true, transformation(origin = {-222, -160}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
   Modelica.Blocks.Math.Product product5 annotation(
     Placement(visible = true, transformation(origin = {-156, 134}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
   Modelica.Blocks.Math.Product product6 annotation(
@@ -185,6 +175,14 @@ model Outfall
   Modelica.Thermal.HeatTransfer.Sources.PrescribedTemperature SkyTemperatureToK annotation(
     Placement(visible = true, transformation(origin = {-242, 90}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
 equation
+  connect(Convection_A.y, product5.u2) annotation(
+    Line(points = {{-210, -160}, {-182, -160}, {-182, 128}, {-168, 128}, {-168, 128}}, color = {0, 0, 127}));
+  connect(Convection_A.y, product6.u2) annotation(
+    Line(points = {{-210, -160}, {-176, -160}, {-176, 72}, {-168, 72}, {-168, 72}}, color = {0, 0, 127}));
+  connect(Convection_A.y, product7.u2) annotation(
+    Line(points = {{-210, -160}, {-178, -160}, {-178, 16}, {-174, 16}, {-174, 16}}, color = {0, 0, 127}));
+  connect(Convection_A.y, product8.u2) annotation(
+    Line(points = {{-210, -160}, {-184, -160}, {-184, -36}, {-170, -36}, {-170, -36}}, color = {0, 0, 127}));
   OutdoorTemperature = invNormal(qt_temperature, mu = Data_outdoor_temperature.y[1], sigma = Data_outdoor_temperature.y[2]);
   SolarRadiation = invUniform(qt_radiation, y_min = Data_solar_radiation.y[1], y_max = Data_solar_radiation.y[2]);
   WindSpeed = max(0.01, invWeibull(qt_wind, lambda = Data_wind_speed.y[1], k = Data_wind_speed.y[2]));
@@ -203,8 +201,6 @@ equation
 // wind speed blocks
   connect(WindSpeed, two_single_ventilation1.Port_wind) annotation(
     Line(points = {{-297, -108}, {-168, -108}, {-168, -142}, {56, -142}, {56, -46}}, color = {0, 0, 127}));
-  connect(WindSpeed, log1.u) annotation(
-    Line(points = {{-297, -108}, {-306, -108}, {-306, -142}, {-296, -142}}, color = {0, 0, 127}));
 // other blocks
   connect(Floor_temperature.y, Temperature_floor.T) annotation(
     Line(points = {{-131, -114}, {-118, -114}}, color = {0, 0, 127}));
@@ -264,28 +260,10 @@ equation
     Line(points = {{-301, 92}, {-294.5, 92}, {-294.5, 90}, {-288, 90}}, color = {0, 0, 127}));
   connect(sqrt1.y, multiProduct1.u[2]) annotation(
     Line(points = {{-301, 62}, {-288, 62}, {-288, 90}}, color = {0, 0, 127}));
-  connect(log1.y, product3.u1) annotation(
-    Line(points = {{-273, -142}, {-273, -144}, {-265, -144}, {-265, -146}}, color = {0, 0, 127}));
   connect(Area_wall3.y, product7.u1) annotation(
     Line(points = {{-181, 28}, {-174, 28}}, color = {0, 0, 127}));
   connect(Radiation_wall4_outer.port_b, Conduction_wall4_outer.port_a) annotation(
     Line(points = {{-114, -72}, {-96, -72}, {-96, -46}}, color = {191, 0, 0}));
-  connect(exp1.y, product4.u1) annotation(
-    Line(points = {{-209, -152}, {-207, -152}, {-207, -155}, {-207, -155}, {-207, -158}}, color = {0, 0, 127}));
-  connect(Convection_A.y, product4.u2) annotation(
-    Line(points = {{-209, -180}, {-208, -180}, {-208, -180}, {-207, -180}, {-207, -175}, {-207, -175}, {-207, -170}}, color = {0, 0, 127}));
-  connect(product4.y, product8.u2) annotation(
-    Line(points = {{-183, -164}, {-174, -164}, {-174, -36}, {-170, -36}}, color = {0, 0, 127}));
-  connect(product4.y, product7.u2) annotation(
-    Line(points = {{-183, -164}, {-174, -164}, {-174, 16}}, color = {0, 0, 127}));
-  connect(product4.y, product6.u2) annotation(
-    Line(points = {{-183, -164}, {-170, -164}, {-170, 72}, {-168, 72}}, color = {0, 0, 127}));
-  connect(product4.y, product5.u2) annotation(
-    Line(points = {{-183, -164}, {-172, -164}, {-172, 128}, {-168, 128}}, color = {0, 0, 127}));
-  connect(Convection_B.y, product3.u2) annotation(
-    Line(points = {{-275, -168}, {-274.5, -168}, {-274.5, -168}, {-274, -168}, {-274, -168}, {-269, -168}, {-269, -158}, {-263, -158}, {-263, -158}, {-265, -158}, {-265, -158}, {-265, -158}, {-265, -158}}, color = {0, 0, 127}));
-  connect(product3.y, exp1.u) annotation(
-    Line(points = {{-241, -152}, {-237, -152}, {-237, -152}, {-231, -152}, {-231, -152}, {-234, -152}, {-234, -152}, {-233, -152}}, color = {0, 0, 127}));
   connect(roof_emissivity.y, product2.u2) annotation(
     Line(points = {{-255, 130}, {-250.5, 130}, {-250.5, 146}, {-244, 146}}, color = {0, 0, 127}));
   connect(product5.y, Convection_roof_outer.Gc) annotation(

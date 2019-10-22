@@ -1,7 +1,7 @@
 %% pre-process
 % read output files and filter
 clear;  clc;
-cd('/home/yunjaeh/github/UQ/MonteCarlo/single-sided/sv.v2/');
+cd('/home/yunjaeh/github/UQ/MonteCarlo/single-sided/data_v3/wv/');
 % cd('/home/yunjaeh/github/UQ/MonteCarlo/single-sided/data_night/wv/');
 % add temperature measurements and compare it to the prediction result
 load('/home/yunjaeh/github/Bangladesh_measurement/TemperatureWind/Data/MeasurementDataTable.mat');
@@ -230,7 +230,7 @@ end
 
 
 %% indoor air temperature
-targetDate = datetime(2019,2,10,12,0,0);
+targetDate = datetime(2019,2,6,12,0,0);
 timeIdx = (targetDate-hours(36)) <= hourly.Time & hourly.Time <= targetDate ; 
  
 
