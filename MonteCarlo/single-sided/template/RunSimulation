@@ -50,12 +50,12 @@ VAL_EMISSIVITY_ROOF=$(awk 'NR==9{print $0}' UQ_input.in)
 # VAL_EMISSIVITY_WALL=$(awk 'NR==11{print $0}' UQ_input.in) 
 VAL_VENTILATION_RATE_1=$(awk 'NR==10{print $0}' UQ_input.in) 
 VAL_VENTILATION_RATE_2=$(awk 'NR==11{print $0}' UQ_input.in) 
-VAL_INFILTRATION=$(awk 'NR==12{print $0}' UQ_input.in) 
+# VAL_INFILTRATION=$(awk 'NR==12{print $0}' UQ_input.in) 
 
 # add input factors (outdoor temperature, radiation, wind)
-VAL_QT_TEMPERATURE=$(awk 'NR==13{print $0}' UQ_input.in) 
-VAL_QT_RADIATION=$(awk 'NR==14{print $0}' UQ_input.in) 
-VAL_QT_WIND=$(awk 'NR==15{print $0}' UQ_input.in) 
+VAL_QT_TEMPERATURE=$(awk 'NR==12{print $0}' UQ_input.in) 
+VAL_QT_RADIATION=$(awk 'NR==13{print $0}' UQ_input.in) 
+VAL_QT_WIND=$(awk 'NR==14{print $0}' UQ_input.in) 
 
  
 # -------------------- substitution -------------------- #

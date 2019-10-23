@@ -1,12 +1,13 @@
 %% pre-process
 % read output files and filter
 clear;  clc;
-cd('/home/yunjaeh/github/UQ/MonteCarlo/single-sided/data_sfv_0210/');
+cd('/home/yunjaeh/github/UQ/MonteCarlo/cross/data_v2/sfv');
+% cd('/home/yunjaeh/github/UQ/MonteCarlo/single-sided/data_night/wv/');
 % add temperature measurements and compare it to the prediction result
 load('/home/yunjaeh/github/Bangladesh_measurement/TemperatureWind/Data/MeasurementDataTable.mat');
 
-num_param   = 10;        % # of uncertain parameters
-num_iter    = 20;       % # of total number of iteration
+num_param   = 8;        % # of uncertain parameters
+num_iter    = 30;       % # of total number of iteration
 num_sample  = 100;      % # of samples in each iteration
 
 data_input=[];
@@ -61,6 +62,17 @@ for iter = 1:num_iter
     end
 end
 
+idx_diverged = find(data.wind(:,1) ==0);
+if(~isempty(idx_diverged))
+    fn = fieldnames(data);
+    for i=1:numel(fn)
+        for j=length(idx_diverged):-1:1
+            data.(fn{i})(idx_diverged(j),:)=[];
+        end
+    end
+
+end
+
 data.input = data_input;
 save('data_summary.mat','data');
 
@@ -71,26 +83,17 @@ for i=1:num_param
 end
 
 
-idx_diverged = find(data.wind(:,1) ==0);
-if(~isempty(idx_diverged))
-    fn = fieldnames(data);
-    for i=1:numel(fn)
-        data.(fn{i}) = data.(fn{i})(1:num_iter*num_sample ~= idx_diverged,:);
-    end
-
-end
-
 %% plot input and outputs
-% load('/home/yunjaeh/github/UQ/MonteCarlo/single-sided/integral_time_stamp.mat');     % load time stamp
+% load('/home/yunjaeh/github/UQ/MonteCarlo/single-sided/data_night/sfv/data_summary.mat');
 load('/home/yunjaeh/github/UQ/MonteCarlo/single-sided/time_stamp3.mat');     % load time stamp
 
 vol_house = 17.72;
 % ach_in = 4.75;
 ach = data.vent_rate*3600/vol_house;
 
-for i=1:size(data.vent_rate,1)
-    ach(i,:) = ach(i,:) + data.input(i,7);
-end
+% for i=1:size(data.vent_rate,1)
+%     ach(i,:) = ach(i,:) + data.input(i,7);
+% end
 
 figure();
 
@@ -187,12 +190,53 @@ ylabel('ACH [1/h]');
 
 
 
+%%
+%%% time average, span = 30 min
+
+dt = 0.5;
+t_averaged = 0:dt:(36-dt);
+ci = 0.025;
+
+for i= 1:length(t_averaged)
+% for i = 1
+    idx = t_averaged(i) < t_stamp & t_stamp < (t_averaged(i)+dt);
+    
+    [f,x] = ecdf(reshape(data.temp_in(:,idx)-273.15,1,[]));
+    T_indoor.mean(i) = mean(reshape(data.temp_in(:,idx),1,[]))-273.15;
+    T_indoor.ci_min(i) = max( x(f < ci) );
+    T_indoor.ci_max(i) = min( x(f > (1-ci) ) );
+
+    
+    [f,x] = ecdf(reshape(data.wall_in(:,idx)-273.15,1,[]));
+    T_wall_in.mean(i) = mean(reshape(data.wall_in(:,idx),1,[]))-273.15;
+    T_wall_in.ci_min(i) = max( x(f < ci) );
+    T_wall_in.ci_max(i) = min( x(f > (1-ci) ) );
+    
+    [f,x] = ecdf(reshape(data.wall_out(:,idx)-273.15,1,[]));
+    T_wall_out.mean(i) = mean(reshape(data.wall_out(:,idx),1,[]))-273.15;
+    T_wall_out.ci_min(i) = max( x(f < ci) );
+    T_wall_out.ci_max(i) = min( x(f > (1-ci) ) );
+    
+    [f,x] = ecdf(reshape(data.roof_in(:,idx)-273.15,1,[]));
+    T_roof_in.mean(i) = mean(reshape(data.roof_in(:,idx),1,[]))-273.15;
+    T_roof_in.ci_min(i) = max( x(f < ci) );
+    T_roof_in.ci_max(i) = min( x(f > (1-ci) ) );
+    
+    [f,x] = ecdf(reshape(data.roof_out(:,idx)-273.15,1,[]));
+    T_roof_out.mean(i) = mean(reshape(data.roof_out(:,idx),1,[]))-273.15;
+    T_roof_out.ci_min(i) = max( x(f < ci) );
+    T_roof_out.ci_max(i) = min( x(f > (1-ci) ) );
+end
 
 
 %% indoor air temperature
-targetDate = datetime(2019,2,10,12,0,0);
-timeIdx = (targetDate-hours(36)) <= hourly.Time & hourly.Time <= targetDate ; 
+targetDate = datetime(2019,2,6,12,0,0);    % wv
+targetDate = datetime(2019,2,5,12,0,0);    % sv
+targetDate = datetime(2019,2,11,12,0,0);    % sw
+targetDate = datetime(2019,2,10,12,0,0);    % sfv
 
+timeIdx = (targetDate-hours(36)) <= hourly.Time & hourly.Time <= targetDate ; 
+ 
 
 figure();
 subplot(1,2,1);
@@ -231,7 +275,6 @@ tempIndoor.mean = mean([hourly.mean.CT_low(timeIdx) ,hourly.mean.CT_mid(timeIdx)
     hourly.mean.SW_low(timeIdx) ,hourly.mean.SW_mid(timeIdx), hourly.mean.SW_top(timeIdx)]');
 
 
-
 tempIndoor.std = sqrt((...
     hourly.std.CT_top(timeIdx).^2 + (hourly.mean.CT_top(timeIdx)-tempIndoor.mean').^2 + ...
     hourly.std.CT_mid(timeIdx).^2 + (hourly.mean.CT_mid(timeIdx)-tempIndoor.mean').^2 + ...
@@ -249,31 +292,7 @@ tempIndoor.std = sqrt((...
     hourly.std.NW_mid(timeIdx).^2 + (hourly.mean.NW_mid(timeIdx)-tempIndoor.mean').^2 + ...
     hourly.std.NW_low(timeIdx).^2 + (hourly.mean.NW_low(timeIdx)-tempIndoor.mean').^2)/15)';
     
-    
-
-%%% hourly average
-
-dt = 0.5;
-t_averaged = 0:dt:(36-dt);
-
-for i= 1:length(t_averaged)
-    idx = t_averaged(i) < t_stamp & t_stamp < (t_averaged(i)+dt);
-    T_indoor.mean(i) = mean(reshape(data.temp_in(:,idx),1,[]))-273.15;
-    T_indoor.std(i) = std(reshape(data.temp_in(:,idx),1,[]));
-    
-    T_wall_in.mean(i) = mean(reshape(data.wall_in(:,idx),1,[]))-273.15;
-    T_wall_in.std(i) = std(reshape(data.wall_in(:,idx),1,[]));
-    T_wall_out.mean(i) = mean(reshape(data.wall_out(:,idx),1,[]))-273.15;
-    T_wall_out.std(i) = std(reshape(data.wall_out(:,idx),1,[]));
-    
-    T_roof_in.mean(i) = mean(reshape(data.roof_in(:,idx),1,[]))-273.15;
-    T_roof_in.std(i) = std(reshape(data.roof_in(:,idx),1,[]));
-    T_roof_out.mean(i) = mean(reshape(data.roof_out(:,idx),1,[]))-273.15;
-    T_roof_out.std(i) = std(reshape(data.roof_out(:,idx),1,[]));
-end
-
-%%%
-
+   
 
 subplot(1,2,2); hold on
 plot(0.5:36.5, tempIndoor.mean, 'b', 'linewidth',2);
@@ -289,7 +308,7 @@ ylim([16 30]);
 % prediction
 %%% hourly data
 plot(t_averaged+dt/2, T_indoor.mean, 'k', 'linewidth',2);
-patch([t_averaged+dt/2, fliplr(t_averaged+dt/2)], [T_indoor.mean+T_indoor.std,  fliplr(T_indoor.mean-T_indoor.std)],[0.8 0.8 0.8],...
+patch([t_averaged+dt/2, fliplr(t_averaged+dt/2)], [T_indoor.ci_max,  fliplr(T_indoor.ci_min)],[0.8 0.8 0.8],...
     'edgecolor','none','facealpha',0.5);
 
 %%% minutely data
@@ -306,7 +325,7 @@ xticklabels({'Noon','Midnight','Noon'});
 
 
 
-%% wall surface temperatures
+% wall surface temperatures
 
 
 figure();
@@ -338,7 +357,7 @@ plot(0.5:36.5, hourly.mean.W_wall_in(timeIdx), 'c');
 
 
 % prediction
-patch([t_averaged+dt/2, fliplr(t_averaged+dt/2)], [T_wall_in.mean+T_wall_in.std,  fliplr(T_wall_in.mean-T_wall_in.std)],[0.8 0.8 0.8],...
+patch([t_averaged+dt/2, fliplr(t_averaged+dt/2)], [T_wall_in.ci_max,  fliplr(T_wall_in.ci_min)],[0.8 0.8 0.8],...
     'edgecolor','none','facealpha',0.5);
 plot(t_averaged+dt/2, T_wall_in.mean, 'k', 'linewidth',2);
 
@@ -370,7 +389,7 @@ plot(0.5:36.5, hourly.mean.S_wall_out(timeIdx), 'g');
 
 
 % prediction
-patch([t_averaged+dt/2, fliplr(t_averaged+dt/2)], [T_wall_out.mean+T_wall_out.std,  fliplr(T_wall_out.mean-T_wall_out.std)],[0.8 0.8 0.8],...
+patch([t_averaged+dt/2, fliplr(t_averaged+dt/2)], [T_wall_out.ci_max,  fliplr(T_wall_out.ci_min)],[0.8 0.8 0.8],...
     'edgecolor','none','facealpha',0.5);
 plot(t_averaged+dt/2, T_wall_out.mean, 'k', 'linewidth',2);
 % patch([t_stamp' fliplr(t_stamp')], [max(data.wall_out) fliplr(min(data.wall_out))]-273.15,[0.8 0.8 0.8],...
@@ -386,7 +405,7 @@ xticklabels({'Noon','Midnight','Noon'});
 
 
 
-%% roof surface temperatures
+% roof surface temperatures
 
 figure();
 subplot(1,2,1); hold on
@@ -400,7 +419,7 @@ plot(0.5:36.5, hourly.mean.Roof_in(timeIdx), 'r', 'linewidth',2);
 
 % prediction
 %%% hourly
-patch([t_averaged+dt/2, fliplr(t_averaged+dt/2)], [T_roof_in.mean+T_roof_in.std,  fliplr(T_roof_in.mean-T_roof_in.std)],[0.8 0.8 0.8],...
+patch([t_averaged+dt/2, fliplr(t_averaged+dt/2)], [T_roof_in.ci_max,  fliplr(T_roof_in.ci_min)],[0.8 0.8 0.8],...
     'edgecolor','none','facealpha',0.5);
 plot(t_averaged+dt/2, T_roof_in.mean, 'k', 'linewidth',2);
 
@@ -423,10 +442,10 @@ patch([0.5:36.5, fliplr(0.5:36.5)],...
     [hourly.mean.Roof_out(timeIdx)'+hourly.std.Roof_out(timeIdx)',...
     fliplr(hourly.mean.Roof_out(timeIdx)'-hourly.std.Roof_out(timeIdx)')],...
     [1.0 0.5 0.5],'edgecolor','none','facealpha',0.5);
-plot(0.5:36.5, hourly.mean.Roof_in(timeIdx), 'r', 'linewidth',2);  
+plot(0.5:36.5, hourly.mean.Roof_out(timeIdx), 'r', 'linewidth',2);  
 % prediction
 %%% hourly
-patch([t_averaged+dt/2, fliplr(t_averaged+dt/2)], [T_roof_out.mean+T_roof_out.std,  fliplr(T_roof_out.mean-T_roof_out.std)],[0.8 0.8 0.8],...
+patch([t_averaged+dt/2, fliplr(t_averaged+dt/2)], [T_roof_out.ci_max,  fliplr(T_roof_out.ci_min)],[0.8 0.8 0.8],...
     'edgecolor','none','facealpha',0.5);
 plot(t_averaged+dt/2, T_roof_out.mean, 'k', 'linewidth',2);
 
@@ -446,171 +465,44 @@ xticklabels({'Noon','Midnight','Noon'});
 
 
 
+%% ratio between components in single-sided ventilation model
+% height:
+%   skylight: 0.25, window:0.91, rear vent: 0.43, floor vent 0.09
+data = sfv
+R_buo  = 0.0035*mean(abs(data.temp_in-data.temp_out))*0.91;
+R_wind = 0.001*mean(data.wind).^2;
+R_turb = 0.01*ones(1,5400);
+R_tot = R_buo+R_wind+R_turb;
 
+figure(); hold on
+plot(t_stamp, R_buo./R_tot, 'r');
+plot(t_stamp, R_wind./R_tot, 'b');
+plot(t_stamp, R_turb./R_tot, 'k');
+legend('buoyancy', 'wind', 'turbulence');
 
-
-
-
-
-
-
-
-
-
-
-%%
-
-% plot
-% clear;  clc;
-% close all;
-
-load('/home/yunjaeh/OpenFOAM/yunjaeh-4.0/run/UQ/uq_2019/integral_time_stamp.mat');     % load time stamp
-load('/home/yunjaeh/matlab/BD_field_measurement/Jan2019/measurement_data.mat'); % load measurement data
-t_stamp = t_stamp+12;
-
-
-% % night, WV, 0206
-%       12.67, 23:54 - 00:30
-%       15.95, 00:35 - 01:11
-% load('./night_WV/data_summary.mat');  
-% title_config = 'Night_WV';
-% date_exp = '20190206120000';
-% ach_test = [23+54/60, 24+30/60, 12.67;...
-%     24+35/60, 25+11/60, 15.95];
-
-
-% % night, SV, 0205
-%       12.34, 02:06 - 02:45
-%       13.98, 03:42 - 04:17
-load('./night_SV/data_summary.mat');
-title_config = 'Night_SV';
-date_exp = '20190205120000';
-ach_test = [26+6/60, 26+45/60, 12.34;...
-    27+42/60, 28+17/60, 13.98];
-
-
-
-% night, SW, 0211
-%       20.35, 00:11 - 00:42
-%       21.83, 03:16 - 03:42
-% %       23.38, 03:46 - 04:10
-% load('./night_SW/data_summary.mat');
-% title_config = 'Night_SW';
-% date_exp = '20190211120000';
-% ach_test = [24+11/60, 24+42/60, 20.35;...
-%     27+16/60, 27+42/60, 21.83;...
-%     27+46/60, 28+10/60, 23.38];
-
-
-% night, SFV, 0209
-%       22.61, 22:10 - 22:45
-%       15.66, 22:50 - 23:22
-%       15.77, 23:30 - 23:59
-% load('./night_SFV/data_summary.mat');
-% title_config = 'Night_SFV';
-% date_exp = '20190210120000';
-% ach_test = [22+10/60, 22+45/60, 22.61;...
-%     22+50/60, 23+22/60, 15.66;...
-%     23+30/60, 23+59/60, 15.77];
-
-
-% night, W only, 0206
-%       15.17, 01:15 - 01:51
-%       14.40, 02:23 - 03:00
-%       16.37, 03:03 - 03:39
-% load('./night_W_only/data_summary.mat');
-% title_config = 'Night_W_only';
-% date_exp = '20190206120000';
-% ach_test = [25+15/60, 25+51/60, 15.17;...
-%     26+23/60, 27+00/60, 14.40;...
-%     27+ 3/60, 27+39/60, 16.37];
-
-% night, S only, 0210
-%       15.42, 01:10 - 01:46
-%       13.89, 02:08 - 02:44
-%       17.95, 02:57 - 03:30
-% load('./night_S_only/data_summary.mat');
-% title_config = 'Night; S only';
-% date_exp = '20190210120000';
-% ach_test = [25+10/60, 25+46/60, 15.42;...
-%     26+08/60, 26+44/60, 13.89;...
-%     26+57/60, 27+30/60, 17.95];
-
-
-% night, V only, 0205
-%        7.71, 04:21 - 04:56
-%        8.92, 05:22 - 05:58
-% load('./night_V_only/data_summary.mat');
-% title_config = 'Night_V_only';
-% date_exp = '20190205120000';
-% ach_test = [26+21/60, 26+56/60, 7.71;...
-%     27+22/60, 27+58/60, 8.92];
-
-
-%
-
-vol_house = 17.72;
-ach_in = 4.75;
-ach = data.vent_rate*3600/vol_house;
-% ach_old = data_old.vent_rate*3600/vol_house;
-
-for i=1:size(data.vent_rate,1)
-    ach(i,:) = ach(i,:) + ach_in*data.input(i,11);
-%     ach_old(i,:) = ach_old(i,:) + ach_in*data_old.input(i,7);
-end
-
-
-%%
-figure();
-hold on
-patch([t_stamp', fliplr(t_stamp')],...
-    [min(ach),fliplr(max(ach))],...
-    [0 0 0]+0.7,'edgecolor','none');
-%     [mean(ach)-2*std(ach),fliplr(mean(ach)+2*std(ach))],...
-    
-% patch([t_stamp', fliplr(t_stamp')],...
-%     [min(ach_old),fliplr(max(ach_old))],...
-%     [0.3 0 0]+0.7,'edgecolor','none');
-%     [mean(ach_old)-2*std(ach_old),fliplr(mean(ach_old)+2*std(ach_old))],...
-    
-
-plot(t_stamp, mean(ach,'omitnan'),'k','linewidth',2);
-% plot(t_stamp, mean(ach_old,'omitnan'),'r','linewidth',2);
-for i=1:size(ach_test,1)
-%     idx_temp  = ach_test(i,1) < t_stamp & t_stamp <= ach_test(i,2);
-    plot([ach_test(i,1), ach_test(i,2)], [ach_test(i,3), ach_test(i,3)], 'r','linewidth',2);
-end
-
-
-alpha(0.7);
-
-grid on
-xlabel('Time [hr]');
-ylabel('ACH [1/hr]');
-xlim([12 36]);
-xticks(12:12:36);
-ylim([10 20]);
+axis([12 36 0 1]);
+xlabel('Time');
+ylabel('Ratio');
+xticks([12 24 36]);
 xticklabels({'Noon','Midnight','Noon'});
-% ylim([0 20]);
-% title(title_config);
-% legend('New','Old');
-print([title_config,'_ACH'],'-dpng');
+% figure();
+% plot(t_stamp, mean(sv.temp_in - sv.temp_out));
+% plot(t_stamp, mean(sv.wind));
 
 
-% Plotting summary in all configurations
-% ach_summary = [];
-% for i=1:size(ach_test,1)
-%     idx_temp  = ach_test(i,1) < t_stamp & t_stamp <= ach_test(i,2);
-%     
-%     plot([ach_test(i,1), ach_test(i,2)], [ach_test(i,3), ach_test(i,3)], 'b','linewidth',2);
-%     ach_summary(i,1) = ach_test(i,3);
-%     ach_summary(i,2) = mean(mean(ach(:,idx_temp)));
-%     ach_summary(i,3) = mean(std(ach(:,idx_temp)));
-% end
-% ach_summary_SFV = ach_summary;
-% save('ACH_summary.mat','ach_summary_SFV','-append');
 
-%%
+
+
+
+
+
+
+
+
+
+
+
+%% ACH summary plot
 ach_summary = [ach_summary_WV;ach_summary_SV;ach_summary_SW;ach_summary_SFV];%;...
 %     ach_summary_W;ach_summary_S;ach_summary_V];
 

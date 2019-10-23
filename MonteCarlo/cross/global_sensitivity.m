@@ -17,7 +17,7 @@ mkdir ./input
 mkdir ./output
 
 num_core    = 12;       % # of cores used for parallel process
-num_param   = 10;        % # of uncertain parameters
+num_param   = 9;        % # of uncertain parameters
 num_iter    = 30;       % # of total number of iteration
 num_sample  = 100;      % # of samples in each iteration
 
@@ -29,13 +29,13 @@ num_sample  = 100;      % # of samples in each iteration
 
 % nominal parameteres       : np(1, ..., n)
 %   values not changing in the simulation
-num_case = '4';
-date = 'Night_0205';
+num_case = '8';
+date = 'Night_0206';
 config ='night_SV';
 
 
-% height_1 = '0.91';      area_1 = '0.62';        % window
-height_1 = '0.25';      area_1 = '0.6598';      % skylight
+height_1 = '0.91';      area_1 = '0.62';        % window
+% height_1 = '0.25';      area_1 = '0.6598';      % skylight
 % height_1 = '0.43';    area_1 = '0.05';          % rear vent
 
 height_2 = '0.43';    area_2 = '0.05';          % rear vent
@@ -45,6 +45,10 @@ height_2 = '0.43';    area_2 = '0.05';          % rear vent
 % height_2 = '0.0';       area_2 ='0.0';          % single sided
 
 
+height_difference = num2str(1.8 - 0.81);         % wv
+% height_difference = num2str(2.51 - 1.8);         % sv
+% height_difference = num2str(2.51 - 0.8);         % sw
+% height_difference = num2str(2.51 - 0.25);         % sfv
 
 
 message = ['case, ', num_case, ...
@@ -54,6 +58,7 @@ message = ['case, ', num_case, ...
     ', height_2, ', height_2, ...
     ', area_1, ', area_1, ...
     ', area_2, ', area_2,  ...
+    ', height difference, ', height_difference,  ...
     ];
 system(['echo ',message,' >> ./case.csv']);
 
@@ -71,16 +76,16 @@ up( 2,1) = 0.75;         up( 2,2) = 1.25;     % Heat convective coefficient; ext
 % up( 6,1) = 0.8;         up( 6,2) = 0.9;    % Emissivity; wall
 up( 3,1) = 0.29;        up( 3,2) = 0.66;    % Absorptivity; roof
 up( 4,1) = 0.06;         up( 4,2) = 0.346;    % Emissivity; roof
-up( 5,1) = 1-0.29;         up( 5,2) = 1+0.29;    % Ventilation rate 1
-up( 6,1) = 1-0.29;         up( 6,2) = 1+0.29;    % Ventilation rate 2
+% up( 5,1) = 1-0.3;         up( 5,2) = 1+0.3;    % Ventilation rate 1
+up( 5,1) = 0.5 * (1-0.3);         up( 5,2) = 0.5*(1+0.3);    % Cp difference
 
 % infiltration range
 % avg of min, mean, max: 3.9487, 4.3925, 4.8275
 % min(min), max(max): 3.27, 5.94
-up( 7,1) = 3.27;        up( 7,2) = 5.94;    % Infiltration
-up( 8,1) = 0.0+eps;        up( 8,2) = 1.0-eps;    % Temperature quantile
-up( 9,1) = 0.0+eps;        up( 9,2) = 1.0-eps;    % Radiation quantile
-up(10,1) = 0.0+eps;        up( 10,2) = 1.0-eps;    % Wind quantile
+% up( 7,1) = 3.27;        up( 7,2) = 5.94;    % Infiltration
+up( 6,1) = 0.0+eps;        up( 6,2) = 1.0-eps;    % Temperature quantile
+up( 7,1) = 0.0+eps;        up( 7,2) = 1.0-eps;    % Radiation quantile
+up( 8,1) = 0.0+eps;        up( 8,2) = 1.0-eps;    % Wind quantile
 
 
 
@@ -95,10 +100,11 @@ for iter = 1:num_iter
 %     parfor i=1:num_sample
     for i=1:num_sample
         system(['echo ',date,' > ./input/UQ_input_',num2str(i),'.in']);
-        system(['echo ',height_1,' >> ./input/UQ_input_',num2str(i),'.in']);
-        system(['echo ',height_2,' >> ./input/UQ_input_',num2str(i),'.in']);
+%         system(['echo ',height_1,' >> ./input/UQ_input_',num2str(i),'.in']);
+%         system(['echo ',height_2,' >> ./input/UQ_input_',num2str(i),'.in']);
         system(['echo ',area_1,' >> ./input/UQ_input_',num2str(i),'.in']);
         system(['echo ',area_2,' >> ./input/UQ_input_',num2str(i),'.in']);
+        system(['echo ',height_difference,' >> ./input/UQ_input_',num2str(i),'.in']);
         
         
         system(['echo ''',num2str(A(i,1)),''' >> ./input/UQ_input_',num2str(i),'.in']);
@@ -109,8 +115,8 @@ for iter = 1:num_iter
         system(['echo ''',num2str(A(i,6)),''' >> ./input/UQ_input_',num2str(i),'.in']);
         system(['echo ''',num2str(A(i,7)),''' >> ./input/UQ_input_',num2str(i),'.in']);
         system(['echo ''',num2str(A(i,8)),''' >> ./input/UQ_input_',num2str(i),'.in']);
-        system(['echo ''',num2str(A(i,9)),''' >> ./input/UQ_input_',num2str(i),'.in']);
-        system(['echo ''',num2str(A(i,10)),''' >> ./input/UQ_input_',num2str(i),'.in']);
+%         system(['echo ''',num2str(A(i,9)),''' >> ./input/UQ_input_',num2str(i),'.in']);
+%         system(['echo ''',num2str(A(i,10)),''' >> ./input/UQ_input_',num2str(i),'.in']);
 %         system(['echo ''',num2str(A(i,11)),''' >> ./input/UQ_input_',num2str(i),'.in']);
 %         system(['echo ''',num2str(A(i,12)),''' >> ./input/UQ_input_',num2str(i),'.in']);
 %         system(['echo ''',num2str(A(i,13)),''' >> ./input/UQ_input_',num2str(i),'.in']);

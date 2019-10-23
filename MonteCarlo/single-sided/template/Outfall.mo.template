@@ -4,9 +4,9 @@ model Outfall
   constant String inputDataLoc = "/home/yunjaeh/github/UQ/MonteCarlo/weatherInputs/DATA_DATE.mat";
   
 // Uncertain parameters
-  constant Real convection_coef_outer = CONVECTION_COEF_OUTER;
   constant Real convection_coef_inner = CONVECTION_COEF_INNER;
-  constant Real infiltration = INFILTRATION;
+  constant Real convection_coef_outer = CONVECTION_COEF_OUTER;
+//  constant Real infiltration = INFILTRATION;
   constant Real reflectance_roof = REFLECTANCE_ROOF;
   constant Real qt_temperature = QT_TEMPERATURE;
   constant Real qt_wind = QT_WIND;

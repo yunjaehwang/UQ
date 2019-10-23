@@ -6,9 +6,7 @@ Night_0211  Date
 1.2232      h_out
 0.31741     reflectance
 0.14009     emissivity
-1.2578      ventilation_rate
 1.2211      cp_difference
-3.3678      infiltration
 0.47349     q_temp
 0.41438     q_rad
 0.3386      q_wind

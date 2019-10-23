@@ -7,10 +7,10 @@ model Cross_ventilation
 //  constant Real discharge_coef_1 = DISCHARGE_COEF_1;
 //  constant Real discharge_coef_2 = DISCHARGE_COEF_2;
   constant Real height_difference = HEIGHT_DIFFERENCE;
-  constant Real cp_difference = CP_DIFFERENCE;
   
   // uncertain parameters
-  constant Real ventilation_rate_1 = VENTILATION_RATE_1;
+  constant Real cp_difference = CP_DIFFERENCE;
+//  constant Real ventilation_rate_1 = VENTILATION_RATE_1;
   
   
   // functions
@@ -51,7 +51,7 @@ model Cross_ventilation
     Placement(visible = true, transformation(origin = {-120, 60}, extent = {{-20, -20}, {20, 20}}, rotation = 0), iconTransformation(origin = {-100, 60}, extent = {{-20, -20}, {20, 20}}, rotation = 0)));
   Modelica.Blocks.Interfaces.RealInput Port_outdoor annotation(
     Placement(visible = true, transformation(origin = {-120, -40}, extent = {{-20, -20}, {20, 20}}, rotation = 0), iconTransformation(origin = {-100, -60}, extent = {{-20, -20}, {20, 20}}, rotation = 0)));
-  Modelica.Blocks.Sources.Constant Delta_cp(k = 0.5 * cp_difference) annotation(
+  Modelica.Blocks.Sources.Constant Delta_cp(k = 0.5 * cp_difference / 1.225) annotation(
     Placement(visible = true, transformation(origin = {-70, 90}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
   Modelica.Blocks.Math.Add add2 annotation(
     Placement(visible = true, transformation(origin = {10, 32}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
@@ -60,19 +60,21 @@ model Cross_ventilation
   Modelica.Blocks.Math.Product product1 annotation(
     Placement(visible = true, transformation(origin = {-30, 56}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
   Modelica.Blocks.Sources.Constant Ventilation_param(k = 1005 * 1.225) annotation(
-    Placement(visible = true, transformation(origin = {28, 76}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+    Placement(visible = true, transformation(origin = {36, 66}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
   Modelica.Blocks.Math.Sqrt sqrt1 annotation(
     Placement(visible = true, transformation(origin = {52, 18}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
   Modelica.Blocks.Math.Product Ventilation_rate annotation(
-    Placement(visible = true, transformation(origin = {86, -38}, extent = {{-10, -10}, {10, 10}}, rotation = 90)));
+    Placement(visible = true, transformation(origin = {90, -38}, extent = {{-10, -10}, {10, 10}}, rotation = 90)));
 equation
-  A_eff = effectiveArea(A1=area_opening_1,A2=area_opening_2,Cd1=discharge_coef_1,Cd2=discharge_coef_2);
-  connect(sqrt1.y, Ventilation_rate.u1) annotation(
-    Line(points = {{63, 18}, {68.5, 18}, {68.5, -50}, {80, -50}}, color = {0, 0, 127}));
-  connect(Ventilation_rate.y, multiProduct2.u[1]) annotation(
-    Line(points = {{86, -27}, {86, -18.5}, {80, -18.5}, {80, 4}}, color = {0, 0, 127}));
+  connect(Ventilation_param.y, multiProduct2.u[3]) annotation(
+    Line(points = {{47, 66}, {80, 66}, {80, 4}}, color = {0, 0, 127}));
   connect(A_eff, Ventilation_rate.u2) annotation(
-    Line(points = {{66, -76}, {66, -69}, {92, -69}, {92, -50}}, color = {0, 0, 127}));
+    Line(points = {{66, -76}, {66, -69}, {96, -69}, {96, -50}}, color = {0, 0, 127}));
+  connect(Ventilation_rate.y, multiProduct2.u[1]) annotation(
+    Line(points = {{90, -27}, {90, -18.5}, {80, -18.5}, {80, 4}}, color = {0, 0, 127}));
+  connect(sqrt1.y, Ventilation_rate.u1) annotation(
+    Line(points = {{63, 18}, {68.5, 18}, {68.5, -50}, {84, -50}}, color = {0, 0, 127}));
+  A_eff = effectiveArea(A1=area_opening_1,A2=area_opening_2,Cd1=discharge_coef_1,Cd2=discharge_coef_2);
   connect(multiProduct1.y, add2.u2) annotation(
     Line(points = {{18, -34}, {30, -34}, {30, 6}, {-14, 6}, {-14, 26}, {-2, 26}, {-2, 26}}, color = {0, 0, 127}));
   connect(add2.y, sqrt1.u) annotation(
@@ -105,8 +107,6 @@ equation
     Line(points = {{-58, 90}, {-42, 90}, {-42, 62}}, color = {0, 0, 127}));
   connect(WS_squared.y, product1.u2) annotation(
     Line(points = {{-59, 50}, {-42, 50}}, color = {0, 0, 127}));
-  connect(Ventilation_param.y, multiProduct2.u[3]) annotation(
-    Line(points = {{39, 76}, {48, 76}, {48, 66}, {80, 66}, {80, 4}}, color = {0, 0, 127}));
   connect(Port_wind, WS_squared.u2) annotation(
     Line(points = {{-120, 60}, {-94, 60}, {-94, 44}, {-82, 44}, {-82, 44}}, color = {0, 0, 127}));
   connect(Port_wind, WS_squared.u1) annotation(

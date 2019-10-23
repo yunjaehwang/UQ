@@ -1,12 +1,12 @@
 %% pre-process
 % read output files and filter
 clear;  clc;
-cd('/home/yunjaeh/github/UQ/MonteCarlo/single-sided/data_v3/wv/');
+cd('/home/yunjaeh/github/UQ/MonteCarlo/single-sided/data_v4/sfv/');
 % cd('/home/yunjaeh/github/UQ/MonteCarlo/single-sided/data_night/wv/');
 % add temperature measurements and compare it to the prediction result
 load('/home/yunjaeh/github/Bangladesh_measurement/TemperatureWind/Data/MeasurementDataTable.mat');
 
-num_param   = 10;        % # of uncertain parameters
+num_param   = 9;        % # of uncertain parameters
 num_iter    = 30;       % # of total number of iteration
 num_sample  = 100;      % # of samples in each iteration
 

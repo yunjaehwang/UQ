@@ -34,15 +34,15 @@ timing = [23+54/60,   24+30/60;...    % WV 1
     22+50/60,   23+22/60;...    % SFV 2
     23+30/60,   23+59/60];        % SFV 3
 
-load('data_v3/wv/data_summary.mat');     wv_single = data;
-load('data_v3/sv/data_summary.mat');     sv_single = data;
-load('data_v3/sw/data_summary.mat');     sw_single = data;
-load('data_v3/sfv/data_summary.mat');    sfv_single = data;
+load('data_v4/wv/data_summary.mat');     wv_single = data;
+load('data_v4/sv/data_summary.mat');     sv_single = data;
+load('data_v4/sw/data_summary.mat');     sw_single = data;
+load('data_v4/sfv/data_summary.mat');    sfv_single = data;
 
-load('../cross/data_v1/wv/data_summary.mat');     wv_cross = data;
-load('../cross/data_v1/sv/data_summary.mat');     sv_cross = data;
-load('../cross/data_v1/sw/data_summary.mat');     sw_cross = data;
-load('../cross/data_v1/sfv/data_summary.mat');    sfv_cross = data;
+load('./cross/data_v2/wv/data_summary.mat');     wv_cross = data;
+load('./cross/data_v2/sv/data_summary.mat');     sv_cross = data;
+load('./cross/data_v2/sw/data_summary.mat');     sw_cross = data;
+load('./cross/data_v2/sfv/data_summary.mat');    sfv_cross = data;
 
 
 
@@ -250,7 +250,7 @@ end
 
 
 %% 90 percent prediction interval
-ci = 0.05;
+ci = 0.025;
 
 
 ACH_prediction_single = zeros(size(ACH,1),3);
