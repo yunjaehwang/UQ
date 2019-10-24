@@ -1,5 +1,4 @@
-clear;
-clc;
+clear;  clc;
 %%% ACH comparison
 load('/home/yunjaeh/github/Bangladesh_measurement/ACH/ach_post_process.mat');
 ACH= ACH_mean_rms;
@@ -34,10 +33,10 @@ timing = [23+54/60,   24+30/60;...    % WV 1
     22+50/60,   23+22/60;...    % SFV 2
     23+30/60,   23+59/60];        % SFV 3
 
-load('data_v4/wv/data_summary.mat');     wv_single = data;
-load('data_v4/sv/data_summary.mat');     sv_single = data;
-load('data_v4/sw/data_summary.mat');     sw_single = data;
-load('data_v4/sfv/data_summary.mat');    sfv_single = data;
+load('./single-sided/data_v4/wv/data_summary.mat');     wv_single = data;
+load('./single-sided/data_v4/sv/data_summary.mat');     sv_single = data;
+load('./single-sided/data_v4/sw/data_summary.mat');     sw_single = data;
+load('./single-sided/data_v4/sfv/data_summary.mat');    sfv_single = data;
 
 load('./cross/data_v2/wv/data_summary.mat');     wv_cross = data;
 load('./cross/data_v2/sv/data_summary.mat');     sv_cross = data;
@@ -45,11 +44,30 @@ load('./cross/data_v2/sw/data_summary.mat');     sw_cross = data;
 load('./cross/data_v2/sfv/data_summary.mat');    sfv_cross = data;
 
 
+%% histogram of input parameters
 
+figure();
+for i=1:9
+    subplot(3,3,i); hold on
+    histogram(wv_single.input(:,i));
+    histogram(sv_single.input(:,i));
+    histogram(sw_single.input(:,i));
+    histogram(sfv_single.input(:,i));
+end
+figure();
+for i=1:8
+    subplot(3,3,i); hold on
+    histogram(wv_cross.input(:,i));
+    histogram(sv_cross.input(:,i));
+    histogram(sw_cross.input(:,i));
+    histogram(sfv_cross.input(:,i));
+end
+    
 
 %%
 load('/home/yunjaeh/github/UQ/MonteCarlo/single-sided/time_stamp3.mat');     % load time stamp
 t_patch = [t_stamp', fliplr(t_stamp')];
+idFig = [1, 1, 2, 2, 3, 3, 3, 4, 4, 4];
 
 vol_house = 17.72;
 wv_single.ach = wv_single.vent_rate*3600/vol_house;
@@ -78,6 +96,7 @@ patch(t_patch, [mean(wv_single.ach)+2*std(wv_single.ach), fliplr(mean(wv_single.
 patch(t_patch, [mean(wv_single.ach)+std(wv_single.ach), fliplr(mean(wv_single.ach)-std(wv_single.ach))],...
     [0.8 0.8 1.0],'edgecolor','none');
 plot(t_stamp, mean(wv_single.ach),'b','linewidth',2);
+
 title('W/V');
 
 % experiment result
@@ -249,9 +268,8 @@ end
 
 
 
-%% 90 percent prediction interval
+%% 95 percent prediction interval
 ci = 0.025;
-
 
 ACH_prediction_single = zeros(size(ACH,1),3);
 ACH_prediction_cross = zeros(size(ACH,1),3);
@@ -269,7 +287,7 @@ for i=1:size(ACH,1)
     ACH_prediction_single(i,3) = min( X(F > (1-ci) ) );
     [F,X] = ecdf(reshape(ACH_cross{i}(:,idx),1,[]));
     ACH_prediction_cross(i,1) = mean(X);
-    ACH_prdiction_cross(i,2) = max( X(F < ci) );
+    ACH_prediction_cross(i,2) = max( X(F < ci) );
     ACH_prediction_cross(i,3) = min( X(F > (1-ci) ) );
 end
 
@@ -284,21 +302,25 @@ for i=1:size(ACH,1)
     plot([ACH(i,1), ACH(i,1)],[ACH_prediction_single(i,1), ACH_prediction_cross(i,1)],'k');
 end
 
-plot_single= errorbar(ACH(:,1), ACH_prediction_single(:,1), ACH_prediction_single(:,2),ACH_prediction_single(:,3),...
-    ACH(:,2), ACH(:,2), 'bo','linewidth',1);
-plot_cross= errorbar(ACH(:,1), ACH_prediction_cross(:,1), ACH_prediction_cross(:,2),ACH_prediction_cross(:,3),...
-    ACH(:,2), ACH(:,2), 'ro','linewidth',1);
-
+% line y=x
 plot_yx = plot(0:50, 0:50, 'k--','linewidth',1);
-xticks([0:5:50]);   yticks([0:5:50]);
 
 
-legend([plot_single,plot_cross,plot_yx],'Single-sided', 'Cross' ,'y=x');  %,...
-    %'location','southoutside','orientation','horizontal');
+% single-sided 
+plot_single= errorbar(ACH(:,1), ACH_prediction_single(:,1), ACH_prediction_single(:,2),ACH_prediction_single(:,3),...
+    ACH(:,2), ACH(:,2), 'bo','linewidth',1.5);
+
+% cross
+plot_cross= errorbar(ACH(:,1), ACH_prediction_cross(:,1), ACH_prediction_cross(:,2),ACH_prediction_cross(:,3),...
+    ACH(:,2), ACH(:,2), 'ro','linewidth',1.5);
+
+legend([plot_single,plot_cross],'Single-sided', 'Cross', 'location','southeast');
+text(17, 17, 'y = x', 'BackgroundColor', 'w', 'rotation', 40, 'FontSize', 15);
+xticks([0:5:50]);   xlabel('ACH: experiment');
+yticks([0:5:50]);   ylabel('ACH: prediction');
+
 grid on
-xlabel('ACH: experiment');
-ylabel('ACH: prediction');
-axis([0 25 0 50])
+axis([0 25 0 25])
 
 
 %% individual plots
@@ -311,22 +333,21 @@ figure(); hold on
 for i=idExp
     plot([ACH(i,1), ACH(i,1)],[ACH_prediction_single(i,1), ACH_prediction_cross(i,1)],'k');
 end
-plot_single= errorbar(ACH(idExp,1), ACH_prediction_single(idExp,1), ACH_prediction_single(idExp,2),ACH_prediction_single(idExp,3),...
-    ACH(idExp,2), ACH(idExp,2), 'bo','linewidth',1);
-plot_cross= errorbar(ACH(idExp,1), ACH_prediction_cross(idExp,1), ACH_prediction_cross(idExp,2),ACH_prediction_cross(idExp,3),...
-    ACH(idExp,2), ACH(idExp,2), 'ro','linewidth',1);
-
 plot_yx = plot(0:50, 0:50, 'k--','linewidth',1);
-xticks([0:5:50]);   yticks([0:5:50]);
+plot_single= errorbar(ACH(idExp,1), ACH_prediction_single(idExp,1), ACH_prediction_single(idExp,2),ACH_prediction_single(idExp,3),...
+    ACH(idExp,2), ACH(idExp,2), 'bo','linewidth',1.5);
+plot_cross= errorbar(ACH(idExp,1), ACH_prediction_cross(idExp,1), ACH_prediction_cross(idExp,2),ACH_prediction_cross(idExp,3),...
+    ACH(idExp,2), ACH(idExp,2), 'ro','linewidth',1.5);
 
 
-% legend([plot_single,plot_cross,plot_yx],'Single-sided', 'Cross' ,'y=x',...
-%     'location','southoutside','orientation','horizontal');
+
+legend([plot_single,plot_cross],'Single-sided', 'Cross', 'location','southeast');
+text(17, 17, 'y = x', 'BackgroundColor', 'w', 'rotation', 40, 'FontSize', 15);
+xticks([0:5:50]);   xlabel('ACH: experiment');
+yticks([0:5:50]);   ylabel('ACH: prediction');
+
 grid on
-xlabel('ACH: experiment');
-ylabel('ACH: prediction');
-axis([0 25 0 50])
-
+axis([0 25 0 25])
 
 
 
