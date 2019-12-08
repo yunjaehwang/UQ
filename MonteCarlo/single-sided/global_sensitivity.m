@@ -17,7 +17,7 @@ mkdir ./input
 mkdir ./output
 
 num_core    = 12;       % # of cores used for parallel process
-num_param   = 10;        % # of uncertain parameters
+num_param   = 9;        % # of uncertain parameters
 num_iter    = 30;       % # of total number of iteration
 num_sample  = 100;      % # of samples in each iteration
 
@@ -29,7 +29,7 @@ num_sample  = 100;      % # of samples in each iteration
 
 % nominal parameteres       : np(1, ..., n)
 %   values not changing in the simulation
-num_case = '16';
+num_case = '19';
 % date = 'Night_0206';    config ='night_WV';
 % date = 'Night_0205';    config ='night_SV';
 % date = 'Night_0211';    config ='night_SW';

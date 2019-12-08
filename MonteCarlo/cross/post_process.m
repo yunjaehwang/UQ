@@ -1,10 +1,10 @@
 %% pre-process
 % read output files and filter
 clear;  clc;
-cd('/home/yunjaeh/github/UQ/MonteCarlo/cross/data_v2/sfv');
+cd('/home/yunjaeh/github/UQ/MonteCarlo/cross/data_v4/sfv');
 % cd('/home/yunjaeh/github/UQ/MonteCarlo/single-sided/data_night/wv/');
 % add temperature measurements and compare it to the prediction result
-load('/home/yunjaeh/github/Bangladesh_measurement/TemperatureWind/Data/MeasurementDataTable.mat');
+% load('/home/yunjaeh/github/Bangladesh_measurement/TemperatureWind/Data/MeasurementDataTable.mat');
 
 num_param   = 8;        % # of uncertain parameters
 num_iter    = 30;       % # of total number of iteration
@@ -62,6 +62,7 @@ for iter = 1:num_iter
     end
 end
 
+data.input = data_input;
 idx_diverged = find(data.wind(:,1) ==0);
 if(~isempty(idx_diverged))
     fn = fieldnames(data);
@@ -73,7 +74,7 @@ if(~isempty(idx_diverged))
 
 end
 
-data.input = data_input;
+
 save('data_summary.mat','data');
 
 figure();
@@ -193,6 +194,12 @@ ylabel('ACH [1/h]');
 %%
 %%% time average, span = 30 min
 
+targetDate = datetime(2019,2,6,12,0,0);    % wv
+targetDate = datetime(2019,2,5,12,0,0);    % sv
+targetDate = datetime(2019,2,11,12,0,0);    % sw
+targetDate = datetime(2019,2,10,12,0,0);    % sfv
+
+
 dt = 0.5;
 t_averaged = 0:dt:(36-dt);
 ci = 0.025;
@@ -229,12 +236,7 @@ for i= 1:length(t_averaged)
 end
 
 
-%% indoor air temperature
-targetDate = datetime(2019,2,6,12,0,0);    % wv
-targetDate = datetime(2019,2,5,12,0,0);    % sv
-targetDate = datetime(2019,2,11,12,0,0);    % sw
-targetDate = datetime(2019,2,10,12,0,0);    % sfv
-
+% indoor air temperature
 timeIdx = (targetDate-hours(36)) <= hourly.Time & hourly.Time <= targetDate ; 
  
 

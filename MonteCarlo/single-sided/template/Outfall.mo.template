@@ -33,6 +33,25 @@ model Outfall
     y :=mu + sigma*sqrt(2)*Special.erfInv(2*u-1);
   end invNormal;
   
+  function invTruncatedNormal "Quantile of truncated normal distribution"
+    import Modelica.Math.Distributions.Normal;
+    extends Modelica.Math.Distributions.Interfaces.partialTruncatedQuantile;
+    input Real mu= (y_max + y_min)/2 "Expectation (mean) value of the normal distribution" annotation(Dialog);
+    input Real sigma=(y_max - y_min)/6 "Standard deviation of the normal distribution" annotation(Dialog);
+    protected
+    Real cdf_min = Normal.cumulative(y_min, mu, sigma);
+    Real cdf_max = Normal.cumulative(y_max, mu, sigma);
+  algorithm
+  y := Normal.quantile(cdf_min + u*(cdf_max-cdf_min), mu=mu, sigma=sigma);
+
+  /* Close to u=0 and u=1, large errors in the numerical computation can
+occur. The following statement is a guard to still keep the property
+ that y is within y_min/y_max
+*/
+  y := min(y_max,max(y_min,y));
+  end invTruncatedNormal;
+
+  
   
   function invWeibull "Quantile of Weibull distribution"
     extends Modelica.Math.Distributions.Interfaces.partialQuantile;
@@ -183,7 +202,9 @@ equation
     Line(points = {{-210, -160}, {-178, -160}, {-178, 16}, {-174, 16}, {-174, 16}}, color = {0, 0, 127}));
   connect(Convection_A.y, product8.u2) annotation(
     Line(points = {{-210, -160}, {-184, -160}, {-184, -36}, {-170, -36}, {-170, -36}}, color = {0, 0, 127}));
-  OutdoorTemperature = invNormal(qt_temperature, mu = Data_outdoor_temperature.y[1], sigma = Data_outdoor_temperature.y[2]);
+//  OutdoorTemperature = invNormal(qt_temperature, mu = Data_outdoor_temperature.y[1], sigma = Data_outdoor_temperature.y[2]);
+  OutdoorTemperature = invTruncatedNormal(qt_temperature, y_min=Data_outdoor_temperature.y[1]-3.5*Data_outdoor_temperature.y[2], 
+  y_max=Data_outdoor_temperature.y[1]+3.5*Data_outdoor_temperature.y[2], mu = Data_outdoor_temperature.y[1], sigma = Data_outdoor_temperature.y[2]);
   SolarRadiation = invUniform(qt_radiation, y_min = Data_solar_radiation.y[1], y_max = Data_solar_radiation.y[2]);
   WindSpeed = max(0.01, invWeibull(qt_wind, lambda = Data_wind_speed.y[1], k = Data_wind_speed.y[2]));
 // Outdoor temperature blocks

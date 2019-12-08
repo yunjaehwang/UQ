@@ -1,7 +1,7 @@
 %% pre-process
 % read output files and filter
 clear;  clc;
-cd('/home/yunjaeh/github/UQ/MonteCarlo/single-sided/data_v4/sfv/');
+cd('/home/yunjaeh/github/UQ/MonteCarlo/single-sided/data/');
 % cd('/home/yunjaeh/github/UQ/MonteCarlo/single-sided/data_night/wv/');
 % add temperature measurements and compare it to the prediction result
 load('/home/yunjaeh/github/Bangladesh_measurement/TemperatureWind/Data/MeasurementDataTable.mat');
@@ -62,18 +62,19 @@ for iter = 1:num_iter
     end
 end
 
+data.input = data_input;
 idx_diverged = find(data.wind(:,1) ==0);
 if(~isempty(idx_diverged))
     fn = fieldnames(data);
     for i=1:numel(fn)
         for j=length(idx_diverged):-1:1
             data.(fn{i})(idx_diverged(j),:)=[];
+%              data.input(idx_diverged(j),:)=[];
         end
     end
-
 end
 
-data.input = data_input;
+
 save('data_summary.mat','data');
 
 figure();

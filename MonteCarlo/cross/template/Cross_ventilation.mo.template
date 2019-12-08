@@ -4,16 +4,14 @@ model Cross_ventilation
   constant Real area_opening_2 = AREA_OPENING_2;
   constant Real discharge_coef_1 = 0.61;
   constant Real discharge_coef_2 = 0.61;
-//  constant Real discharge_coef_1 = DISCHARGE_COEF_1;
-//  constant Real discharge_coef_2 = DISCHARGE_COEF_2;
+  //  constant Real discharge_coef_1 = DISCHARGE_COEF_1;
+  //  constant Real discharge_coef_2 = DISCHARGE_COEF_2;
   constant Real height_difference = HEIGHT_DIFFERENCE;
-  
   // uncertain parameters
   constant Real cp_difference = CP_DIFFERENCE;
-//  constant Real ventilation_rate_1 = VENTILATION_RATE_1;
-  
-  
+  //  constant Real ventilation_rate_1 = VENTILATION_RATE_1;
   // functions
+
   function effectiveArea "Effective area for cross ventilation model"
     input Real A1 = 1 "Area 1";
     input Real A2 = 1 "Area 2";
@@ -21,9 +19,8 @@ model Cross_ventilation
     input Real Cd2 = 0.61 "Discharge coefficient 2";
     output Real y;
   algorithm
-    y := A1*A2 / sqrt( (Cd1 * A1^2 + Cd2 * A2^2) / (2*Cd1*Cd2));
+    y := A1 * A2 / sqrt((Cd1 * A1 ^ 2 + Cd2 * A2 ^ 2) / (2 * Cd1 * Cd2));
   end effectiveArea;
-
 
   Real A_eff;
   // original model blocks
@@ -54,7 +51,7 @@ model Cross_ventilation
   Modelica.Blocks.Sources.Constant Delta_cp(k = 0.5 * cp_difference / 1.225) annotation(
     Placement(visible = true, transformation(origin = {-70, 90}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
   Modelica.Blocks.Math.Add add2 annotation(
-    Placement(visible = true, transformation(origin = {10, 32}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+    Placement(visible = true, transformation(origin = {4, 32}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
   Modelica.Blocks.Math.Product WS_squared annotation(
     Placement(visible = true, transformation(origin = {-70, 50}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
   Modelica.Blocks.Math.Product product1 annotation(
@@ -62,23 +59,29 @@ model Cross_ventilation
   Modelica.Blocks.Sources.Constant Ventilation_param(k = 1005 * 1.225) annotation(
     Placement(visible = true, transformation(origin = {36, 66}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
   Modelica.Blocks.Math.Sqrt sqrt1 annotation(
-    Placement(visible = true, transformation(origin = {52, 18}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+    Placement(visible = true, transformation(origin = {60, 32}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
   Modelica.Blocks.Math.Product Ventilation_rate annotation(
     Placement(visible = true, transformation(origin = {90, -38}, extent = {{-10, -10}, {10, 10}}, rotation = 90)));
+  Modelica.Blocks.Math.Abs abs11 annotation(
+    Placement(visible = true, transformation(origin = {32, 32}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
 equation
+  connect(abs11.y, sqrt1.u) annotation(
+    Line(points = {{44, 32}, {46, 32}, {46, 32}, {48, 32}}, color = {0, 0, 127}));
+  connect(add2.y, abs11.u) annotation(
+    Line(points = {{16, 32}, {20, 32}, {20, 32}, {20, 32}}, color = {0, 0, 127}));
+  connect(sqrt1.y, Ventilation_rate.u1) annotation(
+    Line(points = {{71, 32}, {68.5, 32}, {68.5, -50}, {84, -50}}, color = {0, 0, 127}));
+  connect(product1.y, add2.u1) annotation(
+    Line(points = {{-19, 56}, {-11.5, 56}, {-11.5, 38}, {-8, 38}}, color = {0, 0, 127}));
+  connect(multiProduct1.y, add2.u2) annotation(
+    Line(points = {{18, -34}, {30, -34}, {30, 6}, {-14, 6}, {-14, 26}, {-8, 26}}, color = {0, 0, 127}));
   connect(Ventilation_param.y, multiProduct2.u[3]) annotation(
     Line(points = {{47, 66}, {80, 66}, {80, 4}}, color = {0, 0, 127}));
   connect(A_eff, Ventilation_rate.u2) annotation(
     Line(points = {{66, -76}, {66, -69}, {96, -69}, {96, -50}}, color = {0, 0, 127}));
   connect(Ventilation_rate.y, multiProduct2.u[1]) annotation(
     Line(points = {{90, -27}, {90, -18.5}, {80, -18.5}, {80, 4}}, color = {0, 0, 127}));
-  connect(sqrt1.y, Ventilation_rate.u1) annotation(
-    Line(points = {{63, 18}, {68.5, 18}, {68.5, -50}, {84, -50}}, color = {0, 0, 127}));
-  A_eff = effectiveArea(A1=area_opening_1,A2=area_opening_2,Cd1=discharge_coef_1,Cd2=discharge_coef_2);
-  connect(multiProduct1.y, add2.u2) annotation(
-    Line(points = {{18, -34}, {30, -34}, {30, 6}, {-14, 6}, {-14, 26}, {-2, 26}, {-2, 26}}, color = {0, 0, 127}));
-  connect(add2.y, sqrt1.u) annotation(
-    Line(points = {{22, 32}, {26, 32}, {26, 20}, {40, 20}, {40, 18}}, color = {0, 0, 127}));
+  A_eff = effectiveArea(A1 = area_opening_1, A2 = area_opening_2, Cd1 = discharge_coef_1, Cd2 = discharge_coef_2);
   connect(g.y, multiProduct1.u[1]) annotation(
     Line(points = {{-29, -36}, {-16.5, -36}, {-16.5, -34}, {-4, -34}}, color = {0, 0, 127}));
   connect(Height_difference.y, multiProduct1.u[2]) annotation(
@@ -97,8 +100,6 @@ equation
     Line(points = {{-55, -34}, {-54.5, -34}, {-54.5, -4}, {-52, -4}}, color = {0, 0, 127}));
   connect(Port_outdoor, division1.u2) annotation(
     Line(points = {{-120, -40}, {-78, -40}, {-78, -40}, {-78, -40}}, color = {0, 0, 127}));
-  connect(product1.y, add2.u1) annotation(
-    Line(points = {{-19, 56}, {-11.5, 56}, {-11.5, 38}, {-2, 38}}, color = {0, 0, 127}));
   connect(multiProduct2.y, prescribedHeatFlow1.Q_flow) annotation(
     Line(points = {{102, 4}, {107, 4}, {107, 40}, {122, 40}}, color = {0, 0, 127}));
   connect(prescribedHeatFlow1.port, Port_indoor) annotation(

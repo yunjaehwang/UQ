@@ -17,7 +17,7 @@ mkdir ./input
 mkdir ./output
 
 num_core    = 12;       % # of cores used for parallel process
-num_param   = 9;        % # of uncertain parameters
+num_param   = 8;        % # of uncertain parameters
 num_iter    = 30;       % # of total number of iteration
 num_sample  = 100;      % # of samples in each iteration
 
@@ -29,26 +29,28 @@ num_sample  = 100;      % # of samples in each iteration
 
 % nominal parameteres       : np(1, ..., n)
 %   values not changing in the simulation
-num_case = '8';
-date = 'Night_0206';
-config ='night_SV';
+num_case = '44';
+% date = 'Night_0206';    config ='night_WV';
+% date = 'Night_0205';    config ='night_SV';
+% date = 'Night_0211';    config ='night_SW';
+date = 'Night_0210';    config ='night_SFV';
 
 
-height_1 = '0.91';      area_1 = '0.62';        % window
-% height_1 = '0.25';      area_1 = '0.6598';      % skylight
+% height_1 = '0.91';      area_1 = '0.62';        % window
+height_1 = '0.25';      area_1 = '0.6598';      % skylight
 % height_1 = '0.43';    area_1 = '0.05';          % rear vent
 
-height_2 = '0.43';    area_2 = '0.05';          % rear vent
+% height_2 = '0.43';    area_2 = '0.05';          % rear vent
 % height_2 = '0.91';    area_2 = '0.62';          % window
-% height_2 = '0.09';    area_2 = '0.005';         % floor vent
+height_2 = '0.09';    area_2 = '0.005';         % floor vent
 
 % height_2 = '0.0';       area_2 ='0.0';          % single sided
 
 
-height_difference = num2str(1.8 - 0.81);         % wv
+% height_difference = num2str(1.8 - 0.81);         % wv
 % height_difference = num2str(2.51 - 1.8);         % sv
 % height_difference = num2str(2.51 - 0.8);         % sw
-% height_difference = num2str(2.51 - 0.25);         % sfv
+height_difference = num2str(2.51 - 0.25);         % sfv
 
 
 message = ['case, ', num_case, ...
@@ -77,7 +79,7 @@ up( 2,1) = 0.75;         up( 2,2) = 1.25;     % Heat convective coefficient; ext
 up( 3,1) = 0.29;        up( 3,2) = 0.66;    % Absorptivity; roof
 up( 4,1) = 0.06;         up( 4,2) = 0.346;    % Emissivity; roof
 % up( 5,1) = 1-0.3;         up( 5,2) = 1+0.3;    % Ventilation rate 1
-up( 5,1) = 0.5 * (1-0.3);         up( 5,2) = 0.5*(1+0.3);    % Cp difference
+up( 5,1) = 0.5*(1-0.3);         up( 5,2) = 0.5*(1+0.3);    % Cp difference
 
 % infiltration range
 % avg of min, mean, max: 3.9487, 4.3925, 4.8275
@@ -95,6 +97,8 @@ for iter = 1:num_iter
     for i=1:num_param
         A(:,i) = up(i,1) + (up(i,2) - up(i,1))*A(:,i);
     end
+    A(:,5) = A(:,5).* (-1).^ randi(2,num_sample,1);
+    
     csvwrite(['./data/input/input_',num2str(iter),'.csv'],A,0,0);
     
 %     parfor i=1:num_sample
