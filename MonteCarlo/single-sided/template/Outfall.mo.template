@@ -361,6 +361,6 @@ equation
     Line(points = {{-66, 102}, {-62.5, 102}, {-62.5, 102}, {-61, 102}, {-61, 102}, {-56, 102}, {-56, 102}, {-56, 102}, {-56, 102}, {-46, 102}, {-46, 102}, {-56, 102}}, color = {191, 0, 0}));
   annotation(
     uses(Modelica(version = "3.2.2")),
-    experiment(StartTime = 0, StopTime = 129600, Tolerance = 1e-6, Interval = 120.00),
+    experiment(StartTime = 0, StopTime = 97200, Tolerance = 1e-6, Interval = 120.00),
     __OpenModelica_simulationFlags(lv = "LOG_STATS", s = "dassl"));
 end Outfall;

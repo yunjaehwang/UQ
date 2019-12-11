@@ -1,17 +1,17 @@
 %% pre-process
 % read output files and filter
 clear;  clc;
-cd('/home/yunjaeh/github/UQ/MonteCarlo/single-sided/data/');
+cd('/home/yunjaeh/github/UQ/MonteCarlo/single-sided/data_v6/sv');
 % cd('/home/yunjaeh/github/UQ/MonteCarlo/single-sided/data_night/wv/');
 % add temperature measurements and compare it to the prediction result
-load('/home/yunjaeh/github/Bangladesh_measurement/TemperatureWind/Data/MeasurementDataTable.mat');
+% load('/home/yunjaeh/github/Bangladesh_measurement/TemperatureWind/Data/MeasurementDataTable.mat');
 
 num_param   = 9;        % # of uncertain parameters
-num_iter    = 30;       % # of total number of iteration
+num_iter    = 10;       % # of total number of iteration
 num_sample  = 100;      % # of samples in each iteration
 
 data_input=[];
-len_time = 5400;
+len_time = 4050;
 
 data.temp_out = zeros(num_sample*num_iter, len_time);
 data.rad = zeros(num_sample*num_iter, len_time);
@@ -86,7 +86,7 @@ end
 
 %% plot input and outputs
 % load('/home/yunjaeh/github/UQ/MonteCarlo/single-sided/data_night/sfv/data_summary.mat');
-load('/home/yunjaeh/github/UQ/MonteCarlo/single-sided/time_stamp3.mat');     % load time stamp
+load('/home/yunjaeh/github/UQ/MonteCarlo/cross/time_stamp4.mat');     % load time stamp
 
 vol_house = 17.72;
 % ach_in = 4.75;
@@ -109,7 +109,8 @@ patch([t_stamp' fliplr(t_stamp')], [max(data.temp_out) fliplr(min(data.temp_out)
 %     'edgecolor','none','facealpha',0.5);
 
 legend('Outdoor temperature','Indoor temperature');
-xlim([12 36]);      xlabel('Time');
+% xlim([12 36]);      
+xlabel('Time');
 ylabel('Temperature [^\circC]');
 xticks([12 24 36]);
 xticklabels({'Noon','Midnight','Noon'});
@@ -120,7 +121,8 @@ subplot(2,3,2); hold on
 patch([t_stamp' fliplr(t_stamp')], [max(data.rad) fliplr(min(data.rad))],[0.8 0.8 0.8],'edgecolor','none');
 plot(t_stamp, mean(data.rad),'k','linewidth',1.5);
 
-xlim([12 36]);      xlabel('Time');
+% xlim([12 36]);      
+xlabel('Time');
 ylabel('Temperature [^\circC]');
 xticks([12 24 36]);
 xticklabels({'Noon','Midnight','Noon'});
@@ -134,7 +136,8 @@ plot(t_stamp, mean(data.wind),'k','linewidth',1.5);
 plot(t_stamp, mean(data.wind)+std(data.wind),'k:','linewidth',1.5);
 plot(t_stamp, mean(data.wind)-std(data.wind),'k:','linewidth',1.5);
 
-xlim([12 36]);      xlabel('Time');
+% xlim([12 36]);     
+xlabel('Time');
 xticks([12 24 36]);
 xticklabels({'Noon','Midnight','Noon'});
 ylabel('Wind speed [m/s]');
@@ -151,7 +154,8 @@ patch([t_stamp' fliplr(t_stamp')], [max(data.wall_out) fliplr(min(data.wall_out)
 patch([t_stamp' fliplr(t_stamp')], [max(data.wall_in) fliplr(min(data.wall_in))]-273.15,[1.0 0.8 0.8],...
     'edgecolor','none','facealpha',0.5);
 
-xlim([12 36]);      xlabel('Time');
+% xlim([12 36]);      
+xlabel('Time');
 ylabel('Temperature [^\circC]');
 xticks([12 24 36]);
 xticklabels({'Noon','Midnight','Noon'});
@@ -168,7 +172,8 @@ patch([t_stamp' fliplr(t_stamp')], [max(data.roof_out) fliplr(min(data.roof_out)
 patch([t_stamp' fliplr(t_stamp')], [max(data.roof_in) fliplr(min(data.roof_in))]-273.15,[1.0 0.8 0.8],...
     'edgecolor','none','facealpha',0.5);
 
-xlim([12 36]);      xlabel('Time');
+% xlim([12 36]);      
+xlabel('Time');
 xticks([12 24 36]);
 xticklabels({'Noon','Midnight','Noon'});
 ylabel('Temperature [^\circC]');
@@ -183,7 +188,8 @@ plot(t_stamp, mean(ach)+std(ach),'k:','linewidth',1.5);
 plot(t_stamp, mean(ach),'k','linewidth',1.5);
 plot(t_stamp, mean(ach)-std(ach),'k:','linewidth',1.5);
 
-xlim([12 36]);      xlabel('Time');
+% xlim([12 36]);      
+xlabel('Time');
 xticks([12 24 36]);
 xticklabels({'Noon','Midnight','Noon'});
 % ylim([0 20]);

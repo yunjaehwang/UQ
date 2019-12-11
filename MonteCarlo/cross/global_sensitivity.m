@@ -18,7 +18,7 @@ mkdir ./output
 
 num_core    = 12;       % # of cores used for parallel process
 num_param   = 8;        % # of uncertain parameters
-num_iter    = 30;       % # of total number of iteration
+num_iter    = 10;       % # of total number of iteration
 num_sample  = 100;      % # of samples in each iteration
 
 % Procedures:
@@ -29,11 +29,28 @@ num_sample  = 100;      % # of samples in each iteration
 
 % nominal parameteres       : np(1, ..., n)
 %   values not changing in the simulation
-num_case = '44';
+num_case = '63';
+% for ventilation rate comparison (Night)
 % date = 'Night_0206';    config ='night_WV';
 % date = 'Night_0205';    config ='night_SV';
 % date = 'Night_0211';    config ='night_SW';
-date = 'Night_0210';    config ='night_SFV';
+% date = 'Night_0210';    config ='night_SFV';
+
+% for ventilation rate comparison (day)
+% date = 'Day_0130';    config ='night_WV';   % WV 1
+% date = 'Day_0214';    config ='night_WV';   % WV 2
+% date = 'Day_0204';    config ='night_SV';   % SV 
+date = 'Day_0207';    config ='night_SW';   % SW
+% date = 'Day_0209';    config ='night_SFV';  % SFV
+
+
+
+% temperature cases
+% date = 'Night_0206';    config ='night_WV';
+% date = 'Night_0202';    config ='night_SV';
+% date = 'Night_0203';    config ='night_SV';
+% date = 'Night_0212';    config ='night_SW';
+% date = 'Night_0209';    config ='night_SFV';
 
 
 % height_1 = '0.91';      area_1 = '0.62';        % window
@@ -41,16 +58,16 @@ height_1 = '0.25';      area_1 = '0.6598';      % skylight
 % height_1 = '0.43';    area_1 = '0.05';          % rear vent
 
 % height_2 = '0.43';    area_2 = '0.05';          % rear vent
-% height_2 = '0.91';    area_2 = '0.62';          % window
-height_2 = '0.09';    area_2 = '0.005';         % floor vent
+height_2 = '0.91';    area_2 = '0.62';          % window
+% height_2 = '0.09';    area_2 = '0.005';         % floor vent
 
 % height_2 = '0.0';       area_2 ='0.0';          % single sided
 
 
 % height_difference = num2str(1.8 - 0.81);         % wv
 % height_difference = num2str(2.51 - 1.8);         % sv
-% height_difference = num2str(2.51 - 0.8);         % sw
-height_difference = num2str(2.51 - 0.25);         % sfv
+height_difference = num2str(2.51 - 0.8);         % sw
+% height_difference = num2str(2.51 - 0.25);         % sfv
 
 
 message = ['case, ', num_case, ...
@@ -91,7 +108,7 @@ up( 8,1) = 0.0+eps;        up( 8,2) = 1.0-eps;    % Wind quantile
 
 
 
-for iter = 1:num_iter
+for iter = 1:2%:num_iter
     
     A = rand(num_sample,num_param);
     for i=1:num_param
