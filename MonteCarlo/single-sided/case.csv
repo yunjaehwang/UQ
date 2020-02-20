@@ -49,3 +49,11 @@ case, 62, date, Day_0207, configuration, night_SW, height_1, 0.25, height_2, 0.9
 case, 63, date, Day_0207, configuration, night_SW, height_1, 0.25, height_2, 0.91, area_1, 0.6598, area_2, 0.62, height difference, 1.71
 case, 61, date, Day_0207, configuration, night_SW, height_1, 0.25, height_2, 0.91, area_1, 0.6598, area_2, 0.62
 case, 61, date, Day_0204, configuration, night_SV, height_1, 0.25, height_2, 0.43, area_1, 0.6598, area_2, 0.05
+case, 71, date, Day_0130, configuration, night_WV, height_1, 0.91, height_2, 0.43, area_1, 0.62, area_2, 0.05
+case, 72, date, Day_0204, configuration, night_SV, height_1, 0.25, height_2, 0.43, area_1, 0.6598, area_2, 0.05
+case, 72, date, Day_0207, configuration, night_SW, height_1, 0.25, height_2, 0.91, area_1, 0.6598, area_2, 0.62
+case, 72, date, Day_0209, configuration, night_SFV, height_1, 0.25, height_2, 0.09, area_1, 0.6598, area_2, 0.005
+case, 61, date, Night_0206, configuration, night_WV, height_1, 0.91, height_2, 0.43, area_1, 0.62, area_2, 0.05
+case, 61, date, Night_0202, configuration, night_SV, height_1, 0.25, height_2, 0.43, area_1, 0.6598, area_2, 0.05
+case, 61, date, Night_0212, configuration, night_SW, height_1, 0.25, height_2, 0.91, area_1, 0.6598, area_2, 0.62
+case, 61, date, Night_0209, configuration, night_SFV, height_1, 0.25, height_2, 0.09, area_1, 0.6598, area_2, 0.005

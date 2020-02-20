@@ -18,7 +18,7 @@ mkdir ./output
 
 num_core    = 12;       % # of cores used for parallel process
 num_param   = 8;        % # of uncertain parameters
-num_iter    = 10;       % # of total number of iteration
+num_iter    = 30;       % # of total number of iteration
 num_sample  = 100;      % # of samples in each iteration
 
 % Procedures:
@@ -29,7 +29,7 @@ num_sample  = 100;      % # of samples in each iteration
 
 % nominal parameteres       : np(1, ..., n)
 %   values not changing in the simulation
-num_case = '63';
+num_case = '77';
 % for ventilation rate comparison (Night)
 % date = 'Night_0206';    config ='night_WV';
 % date = 'Night_0205';    config ='night_SV';
@@ -37,11 +37,11 @@ num_case = '63';
 % date = 'Night_0210';    config ='night_SFV';
 
 % for ventilation rate comparison (day)
-% date = 'Day_0130';    config ='night_WV';   % WV 1
-% date = 'Day_0214';    config ='night_WV';   % WV 2
-% date = 'Day_0204';    config ='night_SV';   % SV 
-date = 'Day_0207';    config ='night_SW';   % SW
-% date = 'Day_0209';    config ='night_SFV';  % SFV
+% date = 'Day_0130';    config ='day_WV';   % WV 1
+% date = 'Day_0214';    config ='day_WV';   % WV 2
+% date = 'Day_0204';    config ='day_SV';   % SV 
+date = 'Day_0207';    config ='day_SW';   % SW
+% date = 'Day_0209';    config ='day_SFV';  % SFV
 
 
 
@@ -88,7 +88,8 @@ system(['echo ',message,' >> ./case.csv']);
 %   second column : maximum of UP range
 up = zeros(num_param, 2);
 up( 1,1) = 1;           up( 1,2) = 4;     % Heat convective coefficient; internal
-up( 2,1) = 0.75;         up( 2,2) = 1.25;     % Heat convective coefficient; external
+up( 2,1) = 1;         up( 2,2) = 4;     % Heat convective coefficient; external
+% up( 2,1) = 0.75;         up( 2,2) = 1.25;     % Heat convective coefficient; external
 % up( 3,1) = 52.7;        up( 3,2) = 75.9;    % Conductivity; roof
 % up( 4,1) = 0.6;         up( 4,2) = 1.31;    % Conductivity; wall
 
@@ -108,7 +109,7 @@ up( 8,1) = 0.0+eps;        up( 8,2) = 1.0-eps;    % Wind quantile
 
 
 
-for iter = 1:2%:num_iter
+for iter = 1:30%:num_iter
     
     A = rand(num_sample,num_param);
     for i=1:num_param

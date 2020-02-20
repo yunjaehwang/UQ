@@ -1,13 +1,13 @@
 %% pre-process
 % read output files and filter
 clear;  clc;
-cd('/home/yunjaeh/github/UQ/MonteCarlo/cross/data_v5.temperature_comparison/sfv');
+cd('/home/yunjaeh/github/UQ/MonteCarlo/cross/data_v6.vent/day_sfv');
 % cd('/home/yunjaeh/github/UQ/MonteCarlo/single-sided/data_night/wv/');
 % add temperature measurements and compare it to the prediction result
 
 
 num_param   = 8;        % # of uncertain parameters
-num_iter    = 10;       % # of total number of iteration
+num_iter    = 30;       % # of total number of iteration
 num_sample  = 100;      % # of samples in each iteration
 
 data_input=[];
@@ -195,10 +195,10 @@ ylabel('ACH [1/h]');
 %%
 %%% time average, span = 30 min
 
-% targetDate = datetime(2019,2,6,12,0,0);    % wv
+targetDate = datetime(2019,2,6,12,0,0);    % wv
 % targetDate = datetime(2019,2,3,12,0,0);    % sv 0202
 % targetDate = datetime(2019,2,3,12,0,0);    % sv 0203
-targetDate = datetime(2019,2,12,12,0,0);    % sw
+% targetDate = datetime(2019,2,12,12,0,0);    % sw
 % targetDate = datetime(2019,2,09,12,0,0);    % sfv
 
 % for temperature comparison 

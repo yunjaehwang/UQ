@@ -1,6 +1,6 @@
 clear;  clc;
 %%% ACH comparison
-load('/home/yunjaeh/github/Bangladesh_measurement/ACH/ach_post_process.mat');
+load('/home/yunjaeh/github/Bangladesh_measurement/ACH/ach_exp_night.mat');
 ACH= ACH_mean_rms;
 
 % Window / Vent	
@@ -21,18 +21,29 @@ ACH= ACH_mean_rms;
 
 
 % load prediction data
+% 
+% timing = [23+54/60,   24+30/60;...    % WV 1
+%     24+35/60,   25+11/60;...    % WV 2
+%     26+6/60,    26+45/60;...    % SV 1
+%     27+42/60,   28+17/60;...    % SV 2
+%     24+11/60,   24+42/60;...    % SW 1
+%     27+16/60,   27+42/60;...    % SW 2
+%     27+46/60,   28+10/60;...    % SW 3
+%     22+10/60,   22+45/60;...    % SFV 1
+%     22+50/60,   23+22/60;...    % SFV 2
+%     23+30/60,   23+59/60];        % SFV 3
 
-timing = [23+54/60,   24+30/60;...    % WV 1
-    24+35/60,   25+11/60;...    % WV 2
+timing = [22+10/60,   22+45/60;...    % SFV 1
+    22+50/60,   23+22/60;...    % SFV 2
+    23+30/60,   23+59/60;...        % SFV 3
     26+6/60,    26+45/60;...    % SV 1
-    27+42/60,   28+17/60;...    % SV 2
+    27+42/60,   28+17/60;...    % SV 2    
+    23+54/60,   24+30/60;...    % WV 1
+    24+35/60,   25+11/60;...    % WV 2
     24+11/60,   24+42/60;...    % SW 1
     27+16/60,   27+42/60;...    % SW 2
-    27+46/60,   28+10/60;...    % SW 3
-    22+10/60,   22+45/60;...    % SFV 1
-    22+50/60,   23+22/60;...    % SFV 2
-    23+30/60,   23+59/60];        % SFV 3
-
+    27+46/60,   28+10/60]; %;...    % SW 3
+    
 load('./single-sided/data_v5/wv/data_summary.mat');     wv_single = data;
 load('./single-sided/data_v5/sv/data_summary.mat');     sv_single = data;
 load('./single-sided/data_v5/sw/data_summary.mat');     sw_single = data;
@@ -43,36 +54,36 @@ load('./cross/data_v4/sv/data_summary.mat');     sv_cross = data;
 load('./cross/data_v4/sw/data_summary.mat');     sw_cross = data;
 load('./cross/data_v4/sfv/data_summary.mat');    sfv_cross = data;
 
-load('./cross/data_v3/wv/data_summary.mat');     wv_cross2 = data;
-load('./cross/data_v3/sv/data_summary.mat');     sv_cross2 = data;
-load('./cross/data_v3/sw/data_summary.mat');     sw_cross2 = data;
-load('./cross/data_v3/sfv/data_summary.mat');    sfv_cross2 = data;
+% load('./cross/data_v3/wv/data_summary.mat');     wv_cross2 = data;
+% load('./cross/data_v3/sv/data_summary.mat');     sv_cross2 = data;
+% load('./cross/data_v3/sw/data_summary.mat');     sw_cross2 = data;
+% load('./cross/data_v3/sfv/data_summary.mat');    sfv_cross2 = data;
 
 
 %% histogram of input parameters
 
-figure();
-for i=1:9
-    subplot(3,3,i); hold on
-    histogram(wv_single.input(:,i));
-    histogram(sv_single.input(:,i));
-    histogram(sw_single.input(:,i));
-    histogram(sfv_single.input(:,i));
-end
-figure();
-for i=1:8
-    subplot(3,3,i); hold on
-    histogram(wv_cross.input(:,i));
-    histogram(sv_cross.input(:,i));
-    histogram(sw_cross.input(:,i));
-    histogram(sfv_cross.input(:,i));
-end
-    
+% figure();
+% for i=1:9
+%     subplot(3,3,i); hold on
+%     histogram(wv_single.input(:,i));
+%     histogram(sv_single.input(:,i));
+%     histogram(sw_single.input(:,i));
+%     histogram(sfv_single.input(:,i));
+% end
+% figure();
+% for i=1:8
+%     subplot(3,3,i); hold on
+%     histogram(wv_cross.input(:,i));
+%     histogram(sv_cross.input(:,i));
+%     histogram(sw_cross.input(:,i));
+%     histogram(sfv_cross.input(:,i));
+% end
+%     
 
 %%
 load('/home/yunjaeh/github/UQ/MonteCarlo/single-sided/time_stamp3.mat');     % load time stamp
 t_patch = [t_stamp', fliplr(t_stamp')];
-idFig = [1, 1, 2, 2, 3, 3, 3, 4, 4, 4];
+idFig = [1, 1, 1, 2, 2, 3, 3, 4, 4, 4];
 
 vol_house = 17.72;
 wv_single.ach = wv_single.vent_rate*3600/vol_house;
@@ -99,17 +110,15 @@ sfv_cross.ach = sfv_cross.vent_rate*3600/vol_house;
 
 
 figure();
+
 subplot(2,2,1); hold on
-patch(t_patch, [mean(wv_single.ach)+2*std(wv_single.ach), fliplr(mean(wv_single.ach)-2*std(wv_single.ach))],...
+patch(t_patch, [mean(sfv_single.ach)+2*std(sfv_single.ach), fliplr(mean(sfv_single.ach)-2*std(sfv_single.ach))],...
     [0.9 0.9 1.0],'edgecolor','none');
-patch(t_patch, [mean(wv_single.ach)+std(wv_single.ach), fliplr(mean(wv_single.ach)-std(wv_single.ach))],...
+patch(t_patch, [mean(sfv_single.ach)+std(sfv_single.ach), fliplr(mean(sfv_single.ach)-std(sfv_single.ach))],...
     [0.8 0.8 1.0],'edgecolor','none');
-plot(t_stamp, mean(wv_single.ach),'b','linewidth',2);
-
-title('W/V');
-
-% experiment result
-for i=1:2
+plot(t_stamp, mean(sfv_single.ach),'b','linewidth',2);
+title('S/FV');
+for i=1:3
     patch([timing(i,1),timing(i,2),timing(i,2),timing(i,1)],...
         [ACH(i,1)+2*ACH(i,2),ACH(i,1)+2*ACH(i,2),ACH(i,1)-2*ACH(i,2),ACH(i,1)-2*ACH(i,2) ],...
     [0.7 0.7 0.7],'edgecolor','none');
@@ -118,9 +127,6 @@ for i=1:2
     [0.5 0.5 0.5],'edgecolor','none');
     plot([timing(i,1) timing(i,2)],[ACH(i,1) ACH(i,1)] ,'k','linewidth',2);
 end
-
-
-
 
 subplot(2,2,2); hold on
 patch(t_patch, [mean(sv_single.ach)+2*std(sv_single.ach), fliplr(mean(sv_single.ach)-2*std(sv_single.ach))],...
@@ -129,7 +135,7 @@ patch(t_patch, [mean(sv_single.ach)+std(sv_single.ach), fliplr(mean(sv_single.ac
     [0.8 0.8 1.0],'edgecolor','none');
 plot(t_stamp, mean(sv_single.ach),'b','linewidth',2);
 title('S/V');
-for i=3:4
+for i=4:5
     patch([timing(i,1),timing(i,2),timing(i,2),timing(i,1)],...
         [ACH(i,1)+2*ACH(i,2),ACH(i,1)+2*ACH(i,2),ACH(i,1)-2*ACH(i,2),ACH(i,1)-2*ACH(i,2) ],...
     [0.7 0.7 0.7],'edgecolor','none');
@@ -139,33 +145,32 @@ for i=3:4
     plot([timing(i,1) timing(i,2)],[ACH(i,1) ACH(i,1)] ,'k','linewidth',2);
 end
 
-
 subplot(2,2,3); hold on
+patch(t_patch, [mean(wv_single.ach)+2*std(wv_single.ach), fliplr(mean(wv_single.ach)-2*std(wv_single.ach))],...
+    [0.9 0.9 1.0],'edgecolor','none');
+patch(t_patch, [mean(wv_single.ach)+std(wv_single.ach), fliplr(mean(wv_single.ach)-std(wv_single.ach))],...
+    [0.8 0.8 1.0],'edgecolor','none');
+plot(t_stamp, mean(wv_single.ach),'b','linewidth',2);
+
+title('W/V');
+% experiment result
+for i=6:7
+    patch([timing(i,1),timing(i,2),timing(i,2),timing(i,1)],...
+        [ACH(i,1)+2*ACH(i,2),ACH(i,1)+2*ACH(i,2),ACH(i,1)-2*ACH(i,2),ACH(i,1)-2*ACH(i,2) ],...
+    [0.7 0.7 0.7],'edgecolor','none');
+    patch([timing(i,1),timing(i,2),timing(i,2),timing(i,1)],...
+        [ACH(i,1)+ACH(i,2),ACH(i,1)+ACH(i,2),ACH(i,1)-ACH(i,2),ACH(i,1)-ACH(i,2) ],...
+    [0.5 0.5 0.5],'edgecolor','none');
+    plot([timing(i,1) timing(i,2)],[ACH(i,1) ACH(i,1)] ,'k','linewidth',2);
+end
+
+subplot(2,2,4); hold on
 patch(t_patch, [mean(sw_single.ach)+2*std(sw_single.ach), fliplr(mean(sw_single.ach)-2*std(sw_single.ach))],...
     [0.9 0.9 1.0],'edgecolor','none');
 patch(t_patch, [mean(sw_single.ach)+std(sw_single.ach), fliplr(mean(sw_single.ach)-std(sw_single.ach))],...
     [0.8 0.8 1.0],'edgecolor','none');
 plot(t_stamp, mean(sw_single.ach),'b','linewidth',2);
 title('S/W');
-for i=5:7
-    patch([timing(i,1),timing(i,2),timing(i,2),timing(i,1)],...
-        [ACH(i,1)+2*ACH(i,2),ACH(i,1)+2*ACH(i,2),ACH(i,1)-2*ACH(i,2),ACH(i,1)-2*ACH(i,2) ],...
-    [0.7 0.7 0.7],'edgecolor','none');
-    patch([timing(i,1),timing(i,2),timing(i,2),timing(i,1)],...
-        [ACH(i,1)+ACH(i,2),ACH(i,1)+ACH(i,2),ACH(i,1)-ACH(i,2),ACH(i,1)-ACH(i,2) ],...
-    [0.5 0.5 0.5],'edgecolor','none');
-    plot([timing(i,1) timing(i,2)],[ACH(i,1) ACH(i,1)] ,'k','linewidth',2);
-end
-
-
-
-subplot(2,2,4); hold on
-patch(t_patch, [mean(sfv_single.ach)+2*std(sfv_single.ach), fliplr(mean(sfv_single.ach)-2*std(sfv_single.ach))],...
-    [0.9 0.9 1.0],'edgecolor','none');
-patch(t_patch, [mean(sfv_single.ach)+std(sfv_single.ach), fliplr(mean(sfv_single.ach)-std(sfv_single.ach))],...
-    [0.8 0.8 1.0],'edgecolor','none');
-plot(t_stamp, mean(sfv_single.ach),'b','linewidth',2);
-title('S/FV');
 for i=8:10
     patch([timing(i,1),timing(i,2),timing(i,2),timing(i,1)],...
         [ACH(i,1)+2*ACH(i,2),ACH(i,1)+2*ACH(i,2),ACH(i,1)-2*ACH(i,2),ACH(i,1)-2*ACH(i,2) ],...
@@ -175,6 +180,9 @@ for i=8:10
     [0.5 0.5 0.5],'edgecolor','none');
     plot([timing(i,1) timing(i,2)],[ACH(i,1) ACH(i,1)] ,'k','linewidth',2);
 end
+
+
+
 
 
 for i=1:4
@@ -191,6 +199,49 @@ end
 
 figure();
 subplot(2,2,1); hold on
+% patch(t_patch, [mean(sfv_cross2.ach)+2*std(sfv_cross2.ach), fliplr(mean(sfv_cross2.ach)-2*std(sfv_cross2.ach))],...
+%     [0.9 0.9 1.0],'edgecolor','none','facealpha',0.5);
+
+patch(t_patch, [mean(sfv_cross.ach)+2*std(sfv_cross.ach), fliplr(mean(sfv_cross.ach)-2*std(sfv_cross.ach))],...
+    [1.0 0.9 0.9],'edgecolor','none');
+patch(t_patch, [mean(sfv_cross.ach)+std(sfv_cross.ach), fliplr(mean(sfv_cross.ach)-std(sfv_cross.ach))],...
+    [1.0 0.8 0.8],'edgecolor','none');
+% plot(t_stamp, mean(sfv_cross2.ach),'b','linewidth',2);
+plot(t_stamp, mean(sfv_cross.ach),'r','linewidth',2);
+title('S/FV');
+for i=1:3
+    patch([timing(i,1),timing(i,2),timing(i,2),timing(i,1)],...
+        [ACH(i,1)+2*ACH(i,2),ACH(i,1)+2*ACH(i,2),ACH(i,1)-2*ACH(i,2),ACH(i,1)-2*ACH(i,2) ],...
+    [0.7 0.7 0.7],'edgecolor','none');
+    patch([timing(i,1),timing(i,2),timing(i,2),timing(i,1)],...
+        [ACH(i,1)+ACH(i,2),ACH(i,1)+ACH(i,2),ACH(i,1)-ACH(i,2),ACH(i,1)-ACH(i,2) ],...
+    [0.5 0.5 0.5],'edgecolor','none');
+    plot([timing(i,1) timing(i,2)],[ACH(i,1) ACH(i,1)] ,'k','linewidth',2);
+end
+
+subplot(2,2,2); hold on
+% patch(t_patch, [mean(sv_cross2.ach)+std(sv_cross2.ach), fliplr(mean(sv_cross2.ach)-std(sv_cross2.ach))],...
+%     [0.8 0.8 1.0],'edgecolor','none','facealpha',0.5);
+
+patch(t_patch, [mean(sv_cross.ach)+2*std(sv_cross.ach), fliplr(mean(sv_cross.ach)-2*std(sv_cross.ach))],...
+    [1.0 0.9 0.9],'edgecolor','none');
+patch(t_patch, [mean(sv_cross.ach)+std(sv_cross.ach), fliplr(mean(sv_cross.ach)-std(sv_cross.ach))],...
+    [1.0 0.8 0.8],'edgecolor','none');
+
+% plot(t_stamp, mean(sv_cross2.ach),'b','linewidth',2);
+plot(t_stamp, mean(sv_cross.ach),'r','linewidth',2);
+title('S/V');
+for i=4:5
+    patch([timing(i,1),timing(i,2),timing(i,2),timing(i,1)],...
+        [ACH(i,1)+2*ACH(i,2),ACH(i,1)+2*ACH(i,2),ACH(i,1)-2*ACH(i,2),ACH(i,1)-2*ACH(i,2) ],...
+    [0.7 0.7 0.7],'edgecolor','none');
+    patch([timing(i,1),timing(i,2),timing(i,2),timing(i,1)],...
+        [ACH(i,1)+ACH(i,2),ACH(i,1)+ACH(i,2),ACH(i,1)-ACH(i,2),ACH(i,1)-ACH(i,2) ],...
+    [0.5 0.5 0.5],'edgecolor','none');
+    plot([timing(i,1) timing(i,2)],[ACH(i,1) ACH(i,1)] ,'k','linewidth',2);
+end
+
+subplot(2,2,3); hold on
 % patch(t_patch, [mean(wv_cross2.ach)+2*std(wv_cross2.ach), fliplr(mean(wv_cross2.ach)-2*std(wv_cross2.ach))],...
 %     [0.9 0.9 1.0],'edgecolor','none','facealpha',0.5);
 
@@ -205,7 +256,7 @@ plot(t_stamp, mean(wv_cross.ach),'r','linewidth',2);
 title('W/V');
 
 % experiment result
-for i=1:2
+for i=6:7
     patch([timing(i,1),timing(i,2),timing(i,2),timing(i,1)],...
         [ACH(i,1)+2*ACH(i,2),ACH(i,1)+2*ACH(i,2),ACH(i,1)-2*ACH(i,2),ACH(i,1)-2*ACH(i,2) ],...
     [0.7 0.7 0.7],'edgecolor','none');
@@ -218,30 +269,9 @@ end
 
 
 
-subplot(2,2,2); hold on
-% patch(t_patch, [mean(sv_cross2.ach)+std(sv_cross2.ach), fliplr(mean(sv_cross2.ach)-std(sv_cross2.ach))],...
-%     [0.8 0.8 1.0],'edgecolor','none','facealpha',0.5);
-
-patch(t_patch, [mean(sv_cross.ach)+2*std(sv_cross.ach), fliplr(mean(sv_cross.ach)-2*std(sv_cross.ach))],...
-    [1.0 0.9 0.9],'edgecolor','none');
-patch(t_patch, [mean(sv_cross.ach)+std(sv_cross.ach), fliplr(mean(sv_cross.ach)-std(sv_cross.ach))],...
-    [1.0 0.8 0.8],'edgecolor','none');
-
-% plot(t_stamp, mean(sv_cross2.ach),'b','linewidth',2);
-plot(t_stamp, mean(sv_cross.ach),'r','linewidth',2);
-title('S/V');
-for i=3:4
-    patch([timing(i,1),timing(i,2),timing(i,2),timing(i,1)],...
-        [ACH(i,1)+2*ACH(i,2),ACH(i,1)+2*ACH(i,2),ACH(i,1)-2*ACH(i,2),ACH(i,1)-2*ACH(i,2) ],...
-    [0.7 0.7 0.7],'edgecolor','none');
-    patch([timing(i,1),timing(i,2),timing(i,2),timing(i,1)],...
-        [ACH(i,1)+ACH(i,2),ACH(i,1)+ACH(i,2),ACH(i,1)-ACH(i,2),ACH(i,1)-ACH(i,2) ],...
-    [0.5 0.5 0.5],'edgecolor','none');
-    plot([timing(i,1) timing(i,2)],[ACH(i,1) ACH(i,1)] ,'k','linewidth',2);
-end
 
 
-subplot(2,2,3); hold on
+subplot(2,2,4); hold on
 % patch(t_patch, [mean(sw_cross2.ach)+2*std(sw_cross2.ach), fliplr(mean(sw_cross2.ach)-2*std(sw_cross2.ach))],...
 %     [0.9 0.9 1.0],'edgecolor','none','facealpha',0.5);
 
@@ -253,29 +283,6 @@ patch(t_patch, [mean(sw_cross.ach)+std(sw_cross.ach), fliplr(mean(sw_cross.ach)-
 % plot(t_stamp, mean(sw_cross2.ach),'b','linewidth',2);
 plot(t_stamp, mean(sw_cross.ach),'r','linewidth',2);
 title('S/W');
-for i=5:7
-    patch([timing(i,1),timing(i,2),timing(i,2),timing(i,1)],...
-        [ACH(i,1)+2*ACH(i,2),ACH(i,1)+2*ACH(i,2),ACH(i,1)-2*ACH(i,2),ACH(i,1)-2*ACH(i,2) ],...
-    [0.7 0.7 0.7],'edgecolor','none');
-    patch([timing(i,1),timing(i,2),timing(i,2),timing(i,1)],...
-        [ACH(i,1)+ACH(i,2),ACH(i,1)+ACH(i,2),ACH(i,1)-ACH(i,2),ACH(i,1)-ACH(i,2) ],...
-    [0.5 0.5 0.5],'edgecolor','none');
-    plot([timing(i,1) timing(i,2)],[ACH(i,1) ACH(i,1)] ,'k','linewidth',2);
-end
-
-
-
-subplot(2,2,4); hold on
-% patch(t_patch, [mean(sfv_cross2.ach)+2*std(sfv_cross2.ach), fliplr(mean(sfv_cross2.ach)-2*std(sfv_cross2.ach))],...
-%     [0.9 0.9 1.0],'edgecolor','none','facealpha',0.5);
-
-patch(t_patch, [mean(sfv_cross.ach)+2*std(sfv_cross.ach), fliplr(mean(sfv_cross.ach)-2*std(sfv_cross.ach))],...
-    [1.0 0.9 0.9],'edgecolor','none');
-patch(t_patch, [mean(sfv_cross.ach)+std(sfv_cross.ach), fliplr(mean(sfv_cross.ach)-std(sfv_cross.ach))],...
-    [1.0 0.8 0.8],'edgecolor','none');
-% plot(t_stamp, mean(sfv_cross2.ach),'b','linewidth',2);
-plot(t_stamp, mean(sfv_cross.ach),'r','linewidth',2);
-title('S/FV');
 for i=8:10
     patch([timing(i,1),timing(i,2),timing(i,2),timing(i,1)],...
         [ACH(i,1)+2*ACH(i,2),ACH(i,1)+2*ACH(i,2),ACH(i,1)-2*ACH(i,2),ACH(i,1)-2*ACH(i,2) ],...
@@ -285,6 +292,8 @@ for i=8:10
     [0.5 0.5 0.5],'edgecolor','none');
     plot([timing(i,1) timing(i,2)],[ACH(i,1) ACH(i,1)] ,'k','linewidth',2);
 end
+
+
 
 
 for i=1:4
@@ -304,10 +313,10 @@ ci = 0.025;
 ACH_prediction_single = zeros(size(ACH,1),3);
 ACH_prediction_cross = zeros(size(ACH,1),3);
 
-ACH_single = {wv_single.ach, wv_single.ach, sv_single.ach, sv_single.ach, ...
-    sw_single.ach, sw_single.ach, sw_single.ach, sfv_single.ach, sfv_single.ach, sfv_single.ach };
-ACH_cross = {wv_cross.ach, wv_cross.ach, sv_cross.ach, sv_cross.ach, ...
-    sw_cross.ach, sw_cross.ach, sw_cross.ach, sfv_cross.ach, sfv_cross.ach, sfv_cross.ach };
+ACH_single = {sfv_single.ach, sfv_single.ach, sfv_single.ach, sv_single.ach, sv_single.ach, ...
+    wv_single.ach, wv_single.ach, sw_single.ach, sw_single.ach, sw_single.ach, };
+ACH_cross = {sfv_cross.ach, sfv_cross.ach, sfv_cross.ach, sv_cross.ach, sv_cross.ach, ...
+    wv_cross.ach, wv_cross.ach, sw_cross.ach, sw_cross.ach, sw_cross.ach, };
 
 % ACH_cross2 = {wv_cross2.ach, wv_cross2.ach, sv_cross2.ach, sv_cross2.ach, ...
 %     sw_cross2.ach, sw_cross2.ach, sw_cross2.ach, sfv_cross2.ach, sfv_cross2.ach, sfv_cross2.ach };
@@ -407,14 +416,21 @@ axis([0 25 0 25])
 title('Best fit');
 
 
+% ACH_night.ACH = ACH;
+% ACH_night.ACH_best_fit = ACH_best_fit;
+% ACH_night.ACH_prediction_single = ACH_prediction_single;
+% ACH_night.ACH_prediction_cross = ACH_prediction_cross;
+% save('ACH_night.mat','ACH_night');
+
 
 
 
 %% individual plots
-% idExp = 1:2;    temp_title='W/V'; % wv
-% idExp = 3:4;  temp_title='S/V'; % sv
-% idExp = 5:7;  temp_title='S/W'; % sw
-idExp = 8:10; temp_title='W/FV';  % sfv
+idExp = 1:3; temp_title='W/FV';  % sfv
+% idExp = 4:5;  temp_title='S/V'; % sv
+% idExp = 6:7;    temp_title='W/V'; % wv
+% idExp = 8:10;  temp_title='S/W'; % sw
+
 
 figure(); hold on
 for i=idExp
